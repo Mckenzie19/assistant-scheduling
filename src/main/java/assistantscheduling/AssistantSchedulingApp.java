@@ -36,9 +36,9 @@ public class AssistantSchedulingApp {
 	        // Solve the problem
 	        Solver<AssistantSchedule> solver = solverFactory.buildSolver();
 	        AssistantSchedule solution = solver.solve(problem);
-/*
+
 	        // Visualize the solution
 	        dataHandler.saveSolution(solution);
-	        */
+	       
 	    }
 }
