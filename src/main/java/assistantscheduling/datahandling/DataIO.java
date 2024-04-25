@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -248,78 +249,169 @@ public class DataIO {
     	return jsonData;
     }
 	
+	// Helper function for the writeOutputData function
+	private ArrayList<JSONObject> convertJSONtoList(JSONObject jsonData){
+		ArrayList<JSONObject> listData = new ArrayList<>();
+		// Iterate through each service in the data and add it to the list
+    	jsonData.keySet().forEach(serviceName ->
+    			{
+    				listData.add(new JSONObject().put(serviceName, jsonData.getJSONObject(serviceName)));
+    			});
+    	Collections.sort(listData, new ServiceComparator());
+		
+		return listData;
+	}
+	
+	// Helper function to create a queue of XSSFCellStyles
+	private Queue<ArrayList<XSSFCellStyle>> generateCellStyleList(XSSFWorkbook scheduleWorkbook){
+		// Cell Styles are static, so we make a new pair (title & positions) for each color
+    	// We will use a LinkedList<> Queue to cycle through these pairs
+    	// Title font style for all title styles
+    	Font titleFont = scheduleWorkbook.createFont();
+    	titleFont.setBold(true);
+    	titleFont.setFontHeightInPoints((short) 16);
+    	
+    	// Position font style for all position styles
+    	Font positionFont = scheduleWorkbook.createFont();
+    	positionFont.setFontHeightInPoints((short) 14);
+    	
+    	// Color 1: ROSE
+    	ArrayList<XSSFCellStyle> style1 = new ArrayList<>();
+    	XSSFCellStyle color1TitleStyle = scheduleWorkbook.createCellStyle();
+    	color1TitleStyle.setFont(titleFont);
+    	color1TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color1TitleStyle.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+    	color1TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
+    	style1.add(color1TitleStyle);
+    
+    	XSSFCellStyle color1PositionStyle = scheduleWorkbook.createCellStyle();
+    	color1PositionStyle.setFont(positionFont);
+    	color1PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color1PositionStyle.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+    	color1PositionStyle.setBorderBottom(BorderStyle.THIN);
+    	style1.add(color1PositionStyle);
+    	
+    	// Color 2: LIGHT_GREEN
+    	ArrayList<XSSFCellStyle> style2 = new ArrayList<>();
+    	XSSFCellStyle color2TitleStyle = scheduleWorkbook.createCellStyle();
+    	color2TitleStyle.setFont(titleFont);
+    	color2TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color2TitleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+    	color2TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
+    	style2.add(color2TitleStyle);
+  
+    	XSSFCellStyle color2PositionStyle = scheduleWorkbook.createCellStyle();
+    	color2PositionStyle.setFont(positionFont);
+    	color2PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color2PositionStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+    	color2PositionStyle.setBorderBottom(BorderStyle.THIN);
+    	style2.add(color2PositionStyle);
+    	
+    	// Color 3: LIGHT_CORNFLOWER_BLUE
+    	ArrayList<XSSFCellStyle> style3 = new ArrayList<>();
+    	XSSFCellStyle color3TitleStyle = scheduleWorkbook.createCellStyle();
+    	color3TitleStyle.setFont(titleFont);
+    	color3TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color3TitleStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+    	color3TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
+    	style3.add(color3TitleStyle);
+  
+    	XSSFCellStyle color3PositionStyle = scheduleWorkbook.createCellStyle();
+    	color3PositionStyle.setFont(positionFont);
+    	color3PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color3PositionStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+    	color3PositionStyle.setBorderBottom(BorderStyle.THIN);
+    	style3.add(color3PositionStyle);
+    	
+    	// Color 4: LEMON_CHIFFON
+    	ArrayList<XSSFCellStyle> style4 = new ArrayList<>();
+    	XSSFCellStyle color4TitleStyle = scheduleWorkbook.createCellStyle();
+    	color4TitleStyle.setFont(titleFont);
+    	color4TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color4TitleStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
+    	color4TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
+    	style4.add(color4TitleStyle);
+  
+    	XSSFCellStyle color4PositionStyle = scheduleWorkbook.createCellStyle();
+    	color4PositionStyle.setFont(positionFont);
+    	color4PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color4PositionStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
+    	color4PositionStyle.setBorderBottom(BorderStyle.THIN);
+    	style4.add(color4PositionStyle);
+    	
+    	// Used to alternate cell colors between services to make it easier to read
+    	Queue<ArrayList<XSSFCellStyle>> styleQueue = new LinkedList<>();
+    	styleQueue.add(style1);
+    	styleQueue.add(style2);
+    	styleQueue.add(style3);
+    	styleQueue.add(style4);
+    	
+		return styleQueue;
+	}
+	
+	
     private void writeOutputData(JSONObject jsonData) {   
     	
-    	System.out.println(jsonData);
+    	ArrayList<JSONObject> listData = convertJSONtoList(jsonData);
     	
     	XSSFWorkbook scheduleWorkbook = new XSSFWorkbook();
     	XSSFSheet scheduleSheet = scheduleWorkbook.createSheet("Shedule");
     	
-    	// Setting up cell styles
-    	XSSFCellStyle titleCellStyle = scheduleWorkbook.createCellStyle();
-    	Font titleFont = scheduleWorkbook.createFont();
-    	titleFont.setBold(true);
-    	titleFont.setFontHeightInPoints((short) 14);
-    	titleCellStyle.setFont(titleFont);
+    	// Generates all of the styles used in the workbook
+    	Queue<ArrayList<XSSFCellStyle>> styleQueue = generateCellStyleList(scheduleWorkbook);
     	
-    	XSSFCellStyle positionStyle = scheduleWorkbook.createCellStyle();
-    	Font positionFont = scheduleWorkbook.createFont();
-    	positionFont.setFontHeightInPoints((short) 12);
-    	positionStyle.setFont(positionFont); // TODO: set alignment
-    	
-    	// Used to alternate cell colors between services to make it easier to read
-    	Queue<IndexedColors> colorQueue = new LinkedList<>();
-    	colorQueue.add(IndexedColors.AQUA);
-    	colorQueue.add(IndexedColors.CORAL);
-    	colorQueue.add(IndexedColors.GREEN);
-    	colorQueue.add(IndexedColors.ORCHID);
-    	
-    	// Use int arrays to circumvent the issues altering local variables in the below loops
+    	// Use int arrays to circumvent the issues with altering local variables in the below loops
     	int[] rowNum = new int[1];
     	int[] colNum = new int[1];
     	
-    	// Iterate through each service in the data
-    	jsonData.keySet().forEach(serviceName ->
-    			{
-    				// Get the service's JSON object
-    				JSONObject service = jsonData.getJSONObject(serviceName);
-    				
-    				// Create title row (contains date and name of service)
-    				Row titleRow = scheduleSheet.createRow(rowNum[0]++);
-    				String serviceDate = service.getString("Date");
-    	    		Cell dateCell = titleRow.createCell(colNum[0]++);
-    	    		dateCell.setCellStyle(titleCellStyle);
-    				dateCell.setCellValue(serviceDate);
-    				Cell nameCell = titleRow.createCell(colNum[0]++);
-    				nameCell.setCellStyle(titleCellStyle);
-    				nameCell.setCellValue(serviceName);
-    				// Reset the column number for the next row
-    				colNum[0] = 0;
-    				
-    				// Iterate over positions and create rows for each one
-    				JSONObject positions = service.getJSONObject("Positions");	
-    				positions.keySet().forEach(positionName -> 
-    						{
-    							Row positionRow = scheduleSheet.createRow(rowNum[0]++);
-    							Cell positionNameCell = positionRow.createCell(colNum[0]++);
-    							positionNameCell.setCellStyle(positionStyle);
-    							positionNameCell.setCellValue(positionName);
-    							Cell positionAssistantsCell = positionRow.createCell(colNum[0]++);
-    							positionAssistantsCell.setCellStyle(positionStyle);
-    							positionAssistantsCell.setCellValue(positions.getString(positionName));
-    							// Reset the column number after each row
-    							colNum[0] = 0;
-    						});
-    			});
+    	for (int i = 0; i < listData.size(); i++) {
+    		JSONObject fullService = listData.get(i);
+    		// Since there should only be a single key:value pair, the service name is the first index of the names array
+    		String serviceName = fullService.names().getString(0);
+    		JSONObject service = fullService.getJSONObject(serviceName);
+    		
+    		// Get the style for the service
+    		ArrayList<XSSFCellStyle> serviceStyle = styleQueue.poll();
+    		styleQueue.add(serviceStyle);
+    		
+    		// Create title row (contains date and name of service)
+			Row titleRow = scheduleSheet.createRow(rowNum[0]++);
+			String serviceDate = service.getString("Date");
+    		Cell dateCell = titleRow.createCell(colNum[0]++);
+    		dateCell.setCellStyle(serviceStyle.get(0));
+			dateCell.setCellValue(serviceDate);
+			Cell nameCell = titleRow.createCell(colNum[0]++);
+			nameCell.setCellStyle(serviceStyle.get(0));
+			nameCell.setCellValue(serviceName);
+			// Reset the column number for the next row
+			colNum[0] = 0;
+			
+			// Iterate over positions and create rows for each one
+			JSONObject positions = service.getJSONObject("Positions");	
+			positions.keySet().forEach(positionName -> 
+					{
+						Row positionRow = scheduleSheet.createRow(rowNum[0]++);
+						Cell positionNameCell = positionRow.createCell(colNum[0]++);
+						positionNameCell.setCellStyle(serviceStyle.get(1));
+						positionNameCell.setCellValue(positionName);
+						Cell positionAssistantsCell = positionRow.createCell(colNum[0]++);
+						positionAssistantsCell.setCellStyle(serviceStyle.get(1));
+						positionAssistantsCell.setCellValue(positions.getString(positionName));
+						// Reset the column number after each row
+						colNum[0] = 0;
+					});
+    	}
+    	
+    	// Size the columns to match the inputs given
+    	scheduleSheet.autoSizeColumn(0);
+    	scheduleSheet.autoSizeColumn(1);
 
+    	// Write workbook to actual file
         try {
-
             FileOutputStream fos = new FileOutputStream(new File(outputFilePath));
             scheduleWorkbook.write(fos);
             fos.close();
             scheduleWorkbook.close();
-
-            System.out.println("Excel file '" + outputFilePath + "' created successfully!");
 
         } catch (IOException e) {
             e.printStackTrace();

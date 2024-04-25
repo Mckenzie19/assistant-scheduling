@@ -23,7 +23,7 @@ public class AssistantSchedulingApp {
 	                .withEntityClasses(ServiceAssignment.class)
 	                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
 	                // Sets how long the solver will run for
-	                .withTerminationSpentLimit(Duration.ofSeconds(5)));
+	                .withTerminationSpentLimit(Duration.ofSeconds(1)));
 
 	        // Load the problem
 	        DataIO dataHandler = new DataIO();
@@ -36,9 +36,11 @@ public class AssistantSchedulingApp {
 	        // Solve the problem
 	        Solver<AssistantSchedule> solver = solverFactory.buildSolver();
 	        AssistantSchedule solution = solver.solve(problem);
+	        LOGGER.info("Solving complete, writing results file now");
 
 	        // Visualize the solution
 	        dataHandler.saveSolution(solution);
+	        LOGGER.info("Schedule file ready.");
 	       
 	    }
 }
