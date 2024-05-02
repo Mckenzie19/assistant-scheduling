@@ -156,27 +156,27 @@ public class DataIO {
 			List<String> unavailableMonths = new ArrayList<String>(); // Initialize this as a blank list in case they did not list any unavailable months
 			if (assistantJSON.has("Unavailable Months")){
 				String unavailableMonthsString = assistantJSON.getString("Unavailable Months");
-				unavailableMonths = Arrays.asList(unavailableMonthsString.split(", "));
+				unavailableMonths = Arrays.asList(unavailableMonthsString.split(";"));
 			}
 			
 			// Retrieve int frequency
 			String rawFreq = assistantJSON.getString("Frequency");
 			int frequency;
 			switch (rawFreq) {
-				case "Any": frequency = 0;
+				case "As often as you need me": frequency = 0;
 							break;
 				case "Once per month": frequency = 1;
 									   break;
-				case "Once per quarter": frequency = 2;
+				case "Once a quarter": frequency = 2;
 										 break;
-				case "Twice per year": frequency = 3;
+				case "Twice a year": frequency = 3;
 									   break;
 				default: frequency = 0; 
 			}
 			
 			// Retrieve List<String> preferredPositions
 			String preferredPositionsString = assistantJSON.getString("Preferred Positions");
-			List<String> preferredPositions = Arrays.asList(preferredPositionsString.split(", "));
+			List<String> preferredPositions = Arrays.asList(preferredPositionsString.split(";"));
 		
 			assistantList.add(new Assistant(name, unavailableMonths, frequency, preferredPositions));
 		}
@@ -233,12 +233,15 @@ public class DataIO {
     			assistantName = " ";
     		}
     		
-    		if (jsonData.getJSONObject(serviceName).getJSONObject("Positions").has(positionName)) {
-    			String assistantNames = jsonData.getJSONObject(serviceName).getJSONObject("Positions").getString(positionName);
-    			assistantNames += ", " + assistantName;
-    			jsonData.getJSONObject(serviceName).getJSONObject("Positions").put(positionName, assistantNames);
-    		} else {
-    			jsonData.getJSONObject(serviceName).getJSONObject("Positions").put(positionName, assistantName);
+    		// If the assistant name was null, then no need to update the JSON
+    		if (assistantName != " ") {
+    			if (jsonData.getJSONObject(serviceName).getJSONObject("Positions").has(positionName)) {
+        			String assistantNames = jsonData.getJSONObject(serviceName).getJSONObject("Positions").getString(positionName);
+        			assistantNames += ", " + assistantName;
+        			jsonData.getJSONObject(serviceName).getJSONObject("Positions").put(positionName, assistantNames);
+        		} else {
+        			jsonData.getJSONObject(serviceName).getJSONObject("Positions").put(positionName, assistantName);
+        		}
     		}
     	}
 
@@ -275,19 +278,19 @@ public class DataIO {
     	Font positionFont = scheduleWorkbook.createFont();
     	positionFont.setFontHeightInPoints((short) 14);
     	
-    	// Color 1: ROSE
+    	// Color 1: LAVENDER
     	ArrayList<XSSFCellStyle> style1 = new ArrayList<>();
     	XSSFCellStyle color1TitleStyle = scheduleWorkbook.createCellStyle();
     	color1TitleStyle.setFont(titleFont);
     	color1TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color1TitleStyle.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+    	color1TitleStyle.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
     	color1TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style1.add(color1TitleStyle);
     
     	XSSFCellStyle color1PositionStyle = scheduleWorkbook.createCellStyle();
     	color1PositionStyle.setFont(positionFont);
     	color1PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color1PositionStyle.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+    	color1PositionStyle.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
     	color1PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style1.add(color1PositionStyle);
     	
@@ -355,7 +358,7 @@ public class DataIO {
     	ArrayList<JSONObject> listData = convertJSONtoList(jsonData);
     	
     	XSSFWorkbook scheduleWorkbook = new XSSFWorkbook();
-    	XSSFSheet scheduleSheet = scheduleWorkbook.createSheet("Shedule");
+    	XSSFSheet scheduleSheet = scheduleWorkbook.createSheet("Schedule");
     	
     	// Generates all of the styles used in the workbook
     	Queue<ArrayList<XSSFCellStyle>> styleQueue = generateCellStyleList(scheduleWorkbook);
@@ -387,19 +390,36 @@ public class DataIO {
 			colNum[0] = 0;
 			
 			// Iterate over positions and create rows for each one
-			JSONObject positions = service.getJSONObject("Positions");	
-			positions.keySet().forEach(positionName -> 
-					{
-						Row positionRow = scheduleSheet.createRow(rowNum[0]++);
-						Cell positionNameCell = positionRow.createCell(colNum[0]++);
-						positionNameCell.setCellStyle(serviceStyle.get(1));
-						positionNameCell.setCellValue(positionName);
-						Cell positionAssistantsCell = positionRow.createCell(colNum[0]++);
-						positionAssistantsCell.setCellStyle(serviceStyle.get(1));
-						positionAssistantsCell.setCellValue(positions.getString(positionName));
-						// Reset the column number after each row
-						colNum[0] = 0;
-					});
+			JSONObject positions = service.getJSONObject("Positions");
+			String[] positionNames = JSONObject.getNames(positions);
+			Queue<String> possiblePositions = new LinkedList<String>();
+			possiblePositions.add("Lector");
+			possiblePositions.add("Cantor");
+			possiblePositions.add("Head Usher");
+			possiblePositions.add("Usher");
+			possiblePositions.add("Organist");
+			possiblePositions.add("Acolyte");
+			possiblePositions.add("Communion Server");
+			possiblePositions.add("Greeter");
+			possiblePositions.add("Refreshments");
+			
+			possiblePositions.forEach(pPositionName -> 
+			{
+				Row positionRow = scheduleSheet.createRow(rowNum[0]++);
+				Cell positionNameCell = positionRow.createCell(colNum[0]++);
+				positionNameCell.setCellStyle(serviceStyle.get(1));
+				positionNameCell.setCellValue(pPositionName);
+				Cell positionAssistantsCell = positionRow.createCell(colNum[0]++);
+				positionAssistantsCell.setCellStyle(serviceStyle.get(1));
+				// Checks if the current position is assigned for this service - if so enter assistant name, otherwise leave blank
+				if(Arrays.stream(positionNames).anyMatch(pPositionName::equals)) {
+					positionAssistantsCell.setCellValue(positions.getString(pPositionName));
+				} else {
+					positionAssistantsCell.setCellValue(" ");
+				}
+				// Reset the column number after each row
+				colNum[0] = 0;
+			});
     	}
     	
     	// Size the columns to match the inputs given

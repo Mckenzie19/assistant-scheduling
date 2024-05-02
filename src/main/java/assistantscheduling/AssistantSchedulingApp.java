@@ -23,7 +23,7 @@ public class AssistantSchedulingApp {
 	                .withEntityClasses(ServiceAssignment.class)
 	                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
 	                // Sets how long the solver will run for
-	                .withTerminationSpentLimit(Duration.ofSeconds(1)));
+	                .withTerminationSpentLimit(Duration.ofMinutes(5)));
 
 	        // Load the problem
 	        DataIO dataHandler = new DataIO();
@@ -31,7 +31,10 @@ public class AssistantSchedulingApp {
 	        if (problem == null) return;
 	        
 	        // DEBUG PRINT
-	        LOGGER.info(problem.toString());
+	        // LOGGER.info(problem.toString());
+	        
+	        // TODO: Positions get assigned to multiple people when they should not be
+	        // TODO: The same people get picked every single week
 	        
 	        // Solve the problem
 	        Solver<AssistantSchedule> solver = solverFactory.buildSolver();
