@@ -55,6 +55,10 @@ public class DataIO {
 		writeOutputData(jsonData);
 	}
 	
+	public void setInputFile(File file) {
+		inputFile = file;
+	}
+	
 	/* INPUT CLASSES */
 	
 	// TODO: Cleanup input file gui
@@ -83,7 +87,7 @@ public class DataIO {
 	}
 	
 	// Helper function for getInputFile, ensures that getInputfile does not continue until a file is chosen
-	private File selectFile(JFrame frame) {
+	public File selectFile(JFrame frame) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
         fileChooser.setDialogTitle("Select a file");
