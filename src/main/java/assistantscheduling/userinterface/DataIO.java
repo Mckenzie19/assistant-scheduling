@@ -1,4 +1,4 @@
-package assistantscheduling.datahandling;
+package assistantscheduling.userinterface;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,8 +15,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
+import javax.swing.*;
+
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONObject;
@@ -30,9 +34,9 @@ import assistantscheduling.domain.ServiceAssignment;
 
 public class DataIO {
 	
-	private String inputFilePath;
 	private String outputFilePath;
 	private Scanner scanner;
+	private File inputFile;
 
 	public DataIO() {
 		scanner = new Scanner(System.in);
@@ -40,7 +44,7 @@ public class DataIO {
 
 	/* PUBLIC CLASSES */
 	public AssistantSchedule getData() {
-		getInputFileName();
+		getInputFile();
 		JSONObject jsonData = getInputDataFromFile();
 		return convertJsonToProblem(jsonData);
 	}
@@ -53,14 +57,48 @@ public class DataIO {
 	
 	/* INPUT CLASSES */
 	
-	private void getInputFileName() {
-        System.out.println("Enter the path to the Excel file (without extension):");
-        inputFilePath = scanner.nextLine() + ".xlsx";
+	// TODO: Cleanup input file gui
+	// TODO: Create output file gui
+	
+	private void getInputFile() {
+		 // Create a new JFrame container.
+        JFrame frame = new JFrame("Select Input File");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);  // Center the window
+
+        // Call the method to select a file
+        File selectedFile = selectFile(frame);
+
+        // Process the selected file (if any)
+        if (selectedFile != null) {
+            JOptionPane.showMessageDialog(frame, "Selected file: " + selectedFile.getAbsolutePath());
+            inputFile = selectedFile;
+        } else {
+            JOptionPane.showMessageDialog(frame, "No file was selected.");
+        }
+
+        // Close the application window after file selection
+        frame.dispose();
+	}
+	
+	// Helper function for getInputFile, ensures that getInputfile does not continue until a file is chosen
+	private File selectFile(JFrame frame) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setDialogTitle("Select a file");
+        int result = fileChooser.showOpenDialog(frame);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile();
+        } else {
+            return null;
+        }
     }
 	
 	private JSONObject getInputDataFromFile() {
 		 JSONObject jsonWorkbook = new JSONObject();
-	        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(new File(inputFilePath)))) {
+	        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(inputFile))) {
 	            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 	                Sheet sheet = workbook.getSheetAt(i);
 	                JSONArray jsonSheet = new JSONArray();
@@ -278,69 +316,95 @@ public class DataIO {
     	Font positionFont = scheduleWorkbook.createFont();
     	positionFont.setFontHeightInPoints((short) 14);
     	
-    	// Color 1: LAVENDER
+    	// Color 1: Light Red
     	ArrayList<XSSFCellStyle> style1 = new ArrayList<>();
     	XSSFCellStyle color1TitleStyle = scheduleWorkbook.createCellStyle();
     	color1TitleStyle.setFont(titleFont);
     	color1TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color1TitleStyle.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
+    	byte[] color1Bytes = {(byte)223, (byte)186, (byte)177};
+    	XSSFColor color1  = new XSSFColor(color1Bytes, new DefaultIndexedColorMap());
+    	color1TitleStyle.setFillForegroundColor(color1);
     	color1TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style1.add(color1TitleStyle);
     
     	XSSFCellStyle color1PositionStyle = scheduleWorkbook.createCellStyle();
     	color1PositionStyle.setFont(positionFont);
     	color1PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color1PositionStyle.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
+    	color1PositionStyle.setFillForegroundColor(color1);
     	color1PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style1.add(color1PositionStyle);
     	
-    	// Color 2: LIGHT_GREEN
+    	// Color 2: Light yellow
     	ArrayList<XSSFCellStyle> style2 = new ArrayList<>();
     	XSSFCellStyle color2TitleStyle = scheduleWorkbook.createCellStyle();
     	color2TitleStyle.setFont(titleFont);
     	color2TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color2TitleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+    	byte[] color2Bytes = {(byte)248, (byte)229, (byte)208};
+    	XSSFColor color2  = new XSSFColor(color2Bytes, new DefaultIndexedColorMap());
+    	color2TitleStyle.setFillForegroundColor(color2);
     	color2TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style2.add(color2TitleStyle);
   
     	XSSFCellStyle color2PositionStyle = scheduleWorkbook.createCellStyle();
     	color2PositionStyle.setFont(positionFont);
     	color2PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color2PositionStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+    	color2PositionStyle.setFillForegroundColor(color2);
     	color2PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style2.add(color2PositionStyle);
     	
-    	// Color 3: LIGHT_CORNFLOWER_BLUE
+    	// Color 3: Light green
     	ArrayList<XSSFCellStyle> style3 = new ArrayList<>();
     	XSSFCellStyle color3TitleStyle = scheduleWorkbook.createCellStyle();
     	color3TitleStyle.setFont(titleFont);
     	color3TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color3TitleStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+    	byte[] color3Bytes = {(byte)220, (byte)233, (byte)213};
+    	XSSFColor color3  = new XSSFColor(color3Bytes, new DefaultIndexedColorMap());
+    	color3TitleStyle.setFillForegroundColor(color3);
     	color3TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style3.add(color3TitleStyle);
   
     	XSSFCellStyle color3PositionStyle = scheduleWorkbook.createCellStyle();
     	color3PositionStyle.setFont(positionFont);
     	color3PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color3PositionStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+    	color3PositionStyle.setFillForegroundColor(color3);
     	color3PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style3.add(color3PositionStyle);
     	
-    	// Color 4: LEMON_CHIFFON
+    	// Color 4: Light blue
     	ArrayList<XSSFCellStyle> style4 = new ArrayList<>();
     	XSSFCellStyle color4TitleStyle = scheduleWorkbook.createCellStyle();
     	color4TitleStyle.setFont(titleFont);
     	color4TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color4TitleStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
+    	byte[] color4Bytes = {(byte)204, (byte)218, (byte)245};
+    	XSSFColor color4  = new XSSFColor(color4Bytes, new DefaultIndexedColorMap());
+    	color4TitleStyle.setFillForegroundColor(color4);
     	color4TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style4.add(color4TitleStyle);
   
     	XSSFCellStyle color4PositionStyle = scheduleWorkbook.createCellStyle();
     	color4PositionStyle.setFont(positionFont);
     	color4PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    	color4PositionStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
+    	color4PositionStyle.setFillForegroundColor(color4);
     	color4PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style4.add(color4PositionStyle);
+    	
+    	// Color 5: Light purple
+    	ArrayList<XSSFCellStyle> style5 = new ArrayList<>();
+    	XSSFCellStyle color5TitleStyle = scheduleWorkbook.createCellStyle();
+    	color5TitleStyle.setFont(titleFont);
+    	color5TitleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	byte[] color5Bytes = {(byte)216, (byte)211, (byte)231};
+    	XSSFColor color5  = new XSSFColor(color5Bytes, new DefaultIndexedColorMap());
+    	color5TitleStyle.setFillForegroundColor(color5);
+    	color5TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
+    	style5.add(color5TitleStyle);
+    	
+    	XSSFCellStyle color5PositionStyle = scheduleWorkbook.createCellStyle();
+    	color5PositionStyle.setFont(positionFont);
+    	color5PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    	color5PositionStyle.setFillForegroundColor(color5);
+    	color5PositionStyle.setBorderBottom(BorderStyle.THIN);
+    	style5.add(color5PositionStyle);
     	
     	// Used to alternate cell colors between services to make it easier to read
     	Queue<ArrayList<XSSFCellStyle>> styleQueue = new LinkedList<>();

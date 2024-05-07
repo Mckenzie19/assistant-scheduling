@@ -5,7 +5,7 @@ import java.time.Duration;
 import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.domain.ServiceAssignment;
 import assistantscheduling.solver.AssistantSchedulingConstraintProvider;
-import assistantscheduling.datahandling.DataIO;
+import assistantscheduling.userinterface.DataIO;
 
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
@@ -23,7 +23,7 @@ public class AssistantSchedulingApp {
 	                .withEntityClasses(ServiceAssignment.class)
 	                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
 	                // Sets how long the solver will run for
-	                .withTerminationSpentLimit(Duration.ofMinutes(5)));
+	                .withTerminationSpentLimit(Duration.ofMinutes(1)));
 
 	        // Load the problem
 	        DataIO dataHandler = new DataIO();
