@@ -1,37 +1,20 @@
 package assistantscheduling.userinterface;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import javax.swing.border.EtchedBorder;
-import java.awt.FlowLayout;
-import javax.swing.JInternalFrame;
-import javax.swing.JOptionPane;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
-import java.awt.GridLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.BoxLayout;
-import java.awt.Component;
-import javax.swing.JTable;
-import javax.swing.border.CompoundBorder;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
 import org.optaplanner.core.api.solver.Solver;
 
 import assistantscheduling.domain.AssistantSchedule;
-
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.awt.event.ActionEvent;
-
-import java.awt.Window.Type;
-import javax.swing.border.BevelBorder;
 
 public class SwingInterface extends JFrame {
 
@@ -82,7 +65,6 @@ public class SwingInterface extends JFrame {
 		        // Close the application window after file selection
 		        inputFrame.dispose();
 
-		        // TODO: Do NOT return null, instead display a popup window with an error message.
 		        problem = dataHandler.getData();
 		        if (problem == null) {
 		        	JFrame errorFrame = new JFrame("IMPORT ERROR");
