@@ -28,7 +28,7 @@ public class AssistantSchedulingApp {
 		                .withEntityClasses(ServiceAssignment.class)
 		                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
 		                // Sets how long the solver will run for
-		                .withTerminationSpentLimit(Duration.ofMinutes(1)));
+		                .withTerminationSpentLimit(Duration.ofMinutes(5)));
 				    	Solver<AssistantSchedule> solver = solverFactory.buildSolver();
 				    	
 						SwingInterface frame = new SwingInterface(solver);

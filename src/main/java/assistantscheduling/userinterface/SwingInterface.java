@@ -60,7 +60,7 @@ public class SwingInterface extends JFrame {
 		btnImportData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Create a new JFrame container.
-		        JFrame inputFrame = new JFrame("Select Input File");
+		        JFrame inputFrame = new JFrame("Select Data File");
 		        inputFrame.setSize(400, 300);
 		        inputFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		        inputFrame.setLocationRelativeTo(null);  // Center the window
@@ -73,15 +73,22 @@ public class SwingInterface extends JFrame {
 		            JOptionPane.showMessageDialog(inputFrame, "Selected file: " + selectedFile.getAbsolutePath());
 		            dataHandler.setInputFile(selectedFile);
 		        } else {
-		            JOptionPane.showMessageDialog(inputFrame, "No file was selected.");
+		            JOptionPane.showMessageDialog(inputFrame, "No file was selected. Aborting data import.", "IMPORT ERROR", JOptionPane.ERROR_MESSAGE);
+		            // Close the application window after file selection
+			        inputFrame.dispose();
+		            return;
 		        }
-
+		        
 		        // Close the application window after file selection
 		        inputFrame.dispose();
-		        
+
 		        // TODO: Do NOT return null, instead display a popup window with an error message.
 		        problem = dataHandler.getData();
-		        if (problem == null) return;
+		        if (problem == null) {
+		        	JFrame errorFrame = new JFrame("IMPORT ERROR");
+		        	JOptionPane.showMessageDialog(errorFrame, "Error occured when importing data file. Please try again.", "IMPORT ERROR", JOptionPane.ERROR_MESSAGE);
+		        	errorFrame.dispose();
+		        };
 			}
 		});
 		btnImportData.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
@@ -92,8 +99,30 @@ public class SwingInterface extends JFrame {
 		JButton btnGenerateNewSchedule = new JButton("Build New Schedule");
 		btnGenerateNewSchedule.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Create a new JFrame container.
+		        JFrame outputFrame = new JFrame("Select Data File");
+		        outputFrame.setSize(400, 300);
+		        outputFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		        outputFrame.setLocationRelativeTo(null);  // Center the window
+		        
+		        // Call the method to select a file
+		        File selectedFile = dataHandler.selectFile(outputFrame);
+
+		        // Process the selected file (if any)
+		        if (selectedFile != null) {
+		            JOptionPane.showMessageDialog(outputFrame, "Selected file: " + selectedFile.getAbsolutePath());
+		        } else {
+		            JOptionPane.showMessageDialog(outputFrame, "No file was selected. Aborting schedule building.", "FILE SELECTION ERROR", JOptionPane.ERROR_MESSAGE);
+		            // Close the application window after file selection
+			        outputFrame.dispose();
+		            return;
+		        }
+		       
+	            JOptionPane.showMessageDialog(outputFrame, "Building schedule. Please do not close window or program!", "Building Schedule", JOptionPane.INFORMATION_MESSAGE);
 				AssistantSchedule solution = solver.solve(problem);
-				dataHandler.saveSolution(solution);
+		        dataHandler.saveSolution(solution, selectedFile);
+		        
+	            JOptionPane.showMessageDialog(outputFrame, "Schedule complete!", "Building Schedule", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		btnGenerateNewSchedule.setFont(new Font("Proxima Nova", Font.PLAIN, 12));

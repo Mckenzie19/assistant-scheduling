@@ -34,59 +34,13 @@ import assistantscheduling.domain.ServiceAssignment;
 
 public class DataIO {
 	
-	private String outputFilePath;
-	private Scanner scanner;
+	private File outputFile;
 	private File inputFile;
 
-	public DataIO() {
-		scanner = new Scanner(System.in);
-	}
+	public DataIO() {}
 
 	/* PUBLIC CLASSES */
-	public AssistantSchedule getData() {
-		getInputFile();
-		JSONObject jsonData = getInputDataFromFile();
-		return convertJsonToProblem(jsonData);
-	}
 	
-	public void saveSolution(AssistantSchedule solution) {
-		getOutputFileName();
-		JSONObject jsonData = convertSolutionToJson(solution);
-		writeOutputData(jsonData);
-	}
-	
-	public void setInputFile(File file) {
-		inputFile = file;
-	}
-	
-	/* INPUT CLASSES */
-	
-	// TODO: Cleanup input file gui
-	// TODO: Create output file gui
-	
-	private void getInputFile() {
-		 // Create a new JFrame container.
-        JFrame frame = new JFrame("Select Input File");
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);  // Center the window
-
-        // Call the method to select a file
-        File selectedFile = selectFile(frame);
-
-        // Process the selected file (if any)
-        if (selectedFile != null) {
-            JOptionPane.showMessageDialog(frame, "Selected file: " + selectedFile.getAbsolutePath());
-            inputFile = selectedFile;
-        } else {
-            JOptionPane.showMessageDialog(frame, "No file was selected.");
-        }
-
-        // Close the application window after file selection
-        frame.dispose();
-	}
-	
-	// Helper function for getInputFile, ensures that getInputfile does not continue until a file is chosen
 	public File selectFile(JFrame frame) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -99,6 +53,25 @@ public class DataIO {
             return null;
         }
     }
+	
+	public void setInputFile(File file) {
+		inputFile = file;
+	}
+	
+	public AssistantSchedule getData() {
+		JSONObject jsonData = getInputDataFromFile();
+		return convertJsonToProblem(jsonData);
+	}
+	
+	public void saveSolution(AssistantSchedule solution, File file) {
+		outputFile = file;
+		JSONObject jsonData = convertSolutionToJson(solution);
+		writeOutputData(jsonData);
+	}
+	
+	/* INPUT CLASSES */
+	
+	
 	
 	private JSONObject getInputDataFromFile() {
 		 JSONObject jsonWorkbook = new JSONObject();
@@ -237,12 +210,6 @@ public class DataIO {
 	}
 	
 	/* OUTPUT CLASSES */
-	
-	private void getOutputFileName() {
-        System.out.println("Enter the path of the output Excel file (without extension):");
-        outputFilePath = scanner.nextLine() + ".xlsx";
-        scanner.close();
-	}
 	
 	private JSONObject convertSolutionToJson(AssistantSchedule solution) {
     	JSONObject jsonData = new JSONObject();
@@ -496,7 +463,7 @@ public class DataIO {
 
     	// Write workbook to actual file
         try {
-            FileOutputStream fos = new FileOutputStream(new File(outputFilePath));
+            FileOutputStream fos = new FileOutputStream(outputFile);
             scheduleWorkbook.write(fos);
             fos.close();
             scheduleWorkbook.close();
