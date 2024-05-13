@@ -42,6 +42,7 @@ public class DataIO {
 	/* PUBLIC CLASSES */
 	
 	public File selectFile(JFrame frame) {
+		LOGGER.debug("");
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
         fileChooser.setDialogTitle("Select a file");

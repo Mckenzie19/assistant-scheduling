@@ -6,7 +6,6 @@ import java.time.Duration;
 import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.domain.ServiceAssignment;
 import assistantscheduling.solver.AssistantSchedulingConstraintProvider;
-import assistantscheduling.userinterface.DataIO;
 import assistantscheduling.userinterface.SwingInterface;
 
 import org.optaplanner.core.api.solver.Solver;
@@ -19,7 +18,7 @@ public class AssistantSchedulingApp {
 	
 	 private static final Logger LOGGER = LoggerFactory.getLogger(AssistantSchedulingApp.class);
 
-	    public static void main(String[] args) {
+	    public static void main(String[] args) {    	
 	    	EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
