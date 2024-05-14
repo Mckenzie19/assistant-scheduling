@@ -19,7 +19,7 @@ public class AssistantSchedulingApp {
 	 private static final Logger LOGGER = LoggerFactory.getLogger(AssistantSchedulingApp.class);
 
 	    public static void main(String[] args) {  
-	    	LOGGER.debug("Starting application... ");
+	    	LOGGER.info("Starting application... ");
 	    	EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -38,31 +38,6 @@ public class AssistantSchedulingApp {
 					}
 				}
 			});
-	    	LOGGER.debug("Closing application... ");
-	    	
-//	    	SolverFactory<AssistantSchedule> solverFactory = SolverFactory.create(new SolverConfig()
-//	                .withSolutionClass(AssistantSchedule.class)
-//	                .withEntityClasses(ServiceAssignment.class)
-//	                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
-//	                // Sets how long the solver will run for
-//	                .withTerminationSpentLimit(Duration.ofMinutes(1)));
-//
-//	        // Load the problem
-//	        DataIO dataHandler = new DataIO();
-//	        AssistantSchedule problem = dataHandler.getData();
-//	        if (problem == null) return;
-//	        
-//	        // DEBUG PRINT
-//	        // LOGGER.info(problem.toString());
-//	        
-//	        // Solve the problem
-//	        Solver<AssistantSchedule> solver = solverFactory.buildSolver();
-//	        AssistantSchedule solution = solver.solve(problem);
-//	        LOGGER.info("Solving complete, writing results file now");
-//
-//	        // Visualize the solution
-//	        dataHandler.saveSolution(solution);
-//	        LOGGER.info("Schedule file ready.");
-	       
+	    	LOGGER.info("Closing application... ");	       
 	    }
 }

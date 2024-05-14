@@ -2,6 +2,7 @@
 <!DOCTYPE xml>
 <configuration>
 	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+        
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -17,7 +18,10 @@
             <outputPatternAsHeader>true</outputPatternAsHeader>
         </encoder>
     </appender>
-    <root level="DEBUG">
+    
+    <logger name="a.AssistantSchedulingApp" level="DEBUG"/> 
+    
+    <root level="INFO">
         <appender-ref ref="file" />
     </root>
 </configuration>
