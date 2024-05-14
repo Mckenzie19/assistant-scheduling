@@ -2,9 +2,13 @@ package assistantscheduling.userinterface;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.Taskbar;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
 import org.optaplanner.core.api.solver.Solver;
+
+import com.sun.tools.javac.launcher.Main;
 
 import assistantscheduling.domain.AssistantSchedule;
 
@@ -26,7 +32,25 @@ public class SwingInterface extends JFrame {
 	 * Create the main frame.
 	 */
 	public SwingInterface(Solver<AssistantSchedule> solver) {
+		
+		// Set the application dock icon
+		Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+		URL imageResource = SwingInterface.class.getClassLoader().getResource("images/CLCLogoIcon.gif");
+		Image image = defaultToolkit.getImage(imageResource);
+		Taskbar taskbar = Taskbar.getTaskbar();
+		 try {
+	            //set icon for mac os (and other systems which do support this method)
+	            taskbar.setIconImage(image);
+	        } catch (final UnsupportedOperationException e) {
+	            System.out.println("The os does not support: 'taskbar.setIconImage'");
+	        } catch (final SecurityException e) {
+	            System.out.println("There was a security exception for: 'taskbar.setIconImage'");
+	        }
+	        //set icon for windows os (and other systems which do support this method)
+	        setIconImage(image);
+		
 		DataIO dataHandler = new DataIO();
+		
 		setFont(new Font("Proxima Nova", Font.BOLD, 14));
 		setBackground(Color.DARK_GRAY);
 		setTitle("CLC Worship Assistant Scheduler");
