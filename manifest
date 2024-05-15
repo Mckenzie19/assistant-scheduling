@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: assistantscheduling.AssistantSchedulingApp
+SplashScreen-Image: images/splash.gif

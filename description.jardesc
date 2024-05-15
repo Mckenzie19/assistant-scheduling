@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="/Users/it/Documents/IT/Worship Assistant Scheduling/AssistantScheduling.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/assistant-scheduling/description.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/assistant-scheduling/manifest" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <folder path="/assistant-scheduling/target"/>
+        <file path="/assistant-scheduling/description.jardesc"/>
+        <file path="/assistant-scheduling/pom.xml"/>
+        <file path="/assistant-scheduling/README.md"/>
+        <folder path="/assistant-scheduling/src"/>
+        <file path="/assistant-scheduling/LICENSE"/>
+        <file path="/assistant-scheduling/.classpath"/>
+        <file path="/assistant-scheduling/.project"/>
+        <folder path="/assistant-scheduling/bin"/>
+        <file path="/assistant-scheduling/manifest"/>
+        <folder path="/assistant-scheduling/logs"/>
+        <javaElement handleIdentifier="=assistant-scheduling/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/"/>
+        <javaElement handleIdentifier="=assistant-scheduling/src\/main\/resources=/maven.pomderived=/true=/=/optional=/true=/"/>
+    </selectedElements>
+</jardesc>
