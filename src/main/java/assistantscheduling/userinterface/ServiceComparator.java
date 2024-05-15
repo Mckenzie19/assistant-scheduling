@@ -21,8 +21,8 @@ public class ServiceComparator implements Comparator<JSONObject> {
 		LocalTime time2 = LocalTime.parse(service2.getJSONObject(service2.names().getString(0)).getString("Time"), tf);
 		LocalDateTime dateTime1 = LocalDateTime.of(date1, time1);
 		LocalDateTime dateTime2 = LocalDateTime.of(date2, time2);
-		
+
 		return dateTime1.compareTo(dateTime2);
 	}
-	
+
 }

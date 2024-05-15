@@ -13,18 +13,26 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Scanner;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import assistantscheduling.domain.Assistant;
 import assistantscheduling.domain.AssistantSchedule;
@@ -33,14 +41,14 @@ import assistantscheduling.domain.Service;
 import assistantscheduling.domain.ServiceAssignment;
 
 public class DataIO {
-	
+
 	private File outputFile;
 	private File inputFile;
 
 	public DataIO() {}
 
 	/* PUBLIC CLASSES */
-	
+
 	public File selectFile(JFrame frame) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -53,26 +61,26 @@ public class DataIO {
             return null;
         }
     }
-	
+
 	public void setInputFile(File file) {
 		inputFile = file;
 	}
-	
+
 	public AssistantSchedule getData() {
 		JSONObject jsonData = getInputDataFromFile();
 		return convertJsonToProblem(jsonData);
 	}
-	
+
 	public void saveSolution(AssistantSchedule solution, File file) {
 		outputFile = file;
 		JSONObject jsonData = convertSolutionToJson(solution);
 		writeOutputData(jsonData);
 	}
-	
+
 	/* INPUT CLASSES */
-	
-	
-	
+
+
+
 	private JSONObject getInputDataFromFile() {
 		 JSONObject jsonWorkbook = new JSONObject();
 	        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(inputFile))) {
@@ -101,7 +109,7 @@ public class DataIO {
 	        }
 	        return jsonWorkbook;
 	}
-	
+
 	private static Object getCellValue(Cell cell) {
 		switch (cell.getCellType()) {
         case STRING:
@@ -125,11 +133,11 @@ public class DataIO {
             return "";
 		}
 	}
-	
+
 	private AssistantSchedule convertJsonToProblem(JSONObject jsonData) {
 		// Retrieve Services
 		JSONArray services = jsonData.getJSONArray("Services");
-		List<Service> serviceList = new ArrayList<Service>();
+		List<Service> serviceList = new ArrayList<>();
 		// Use this to make sure date entries convert properly
 		 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("[M/d/yy][M/d/yyyy][MM/dd/yy][MM/dd/yyyy]");
 		 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("[hh:mm a][h:mm a][hh a][h a]");
@@ -146,34 +154,34 @@ public class DataIO {
 			List<String> positions = Arrays.asList(positionsString.split(", "));
 			serviceList.add(new Service(name, date, time, positions));
 		}
-		
+
 		// Get Positions
 		JSONArray positions = jsonData.getJSONArray("Positions");
-		List<Position> positionList = new ArrayList<Position>();
+		List<Position> positionList = new ArrayList<>();
 		for(int i = 0; i<positions.length(); i++) {
 			JSONObject positionJSON = positions.getJSONObject(i);
 			// Retrieve String name
 			String name = positionJSON.getString("Position");
 			positionList.add(new Position(name));
 		}
-		
+
 		// Get Assistants
 		// Assistants MUST HAVE Name, Preferred Positions, and Frequency
 		// Assistants have the OPTIONAL attribute of Unavailable Months
 		JSONArray assistants = jsonData.getJSONArray("Assistants");
-		List<Assistant> assistantList = new ArrayList<Assistant>();
+		List<Assistant> assistantList = new ArrayList<>();
 		for(int i = 0; i<assistants.length(); i++) {
 			JSONObject assistantJSON = assistants.getJSONObject(i);
 			// Retrieve String name
 			String name = assistantJSON.getString("Name");
-			
+
 			// Check for and retrieve List<String> unavailableMonths
-			List<String> unavailableMonths = new ArrayList<String>(); // Initialize this as a blank list in case they did not list any unavailable months
+			List<String> unavailableMonths = new ArrayList<>(); // Initialize this as a blank list in case they did not list any unavailable months
 			if (assistantJSON.has("Unavailable Months")){
 				String unavailableMonthsString = assistantJSON.getString("Unavailable Months");
 				unavailableMonths = Arrays.asList(unavailableMonthsString.split(";"));
 			}
-			
+
 			// Retrieve int frequency
 			String rawFreq = assistantJSON.getString("Frequency");
 			int frequency;
@@ -186,53 +194,52 @@ public class DataIO {
 										 break;
 				case "Twice a year": frequency = 3;
 									   break;
-				default: frequency = 0; 
+				default: frequency = 0;
 			}
-			
+
 			// Retrieve List<String> preferredPositions
 			String preferredPositionsString = assistantJSON.getString("Preferred Positions");
 			List<String> preferredPositions = Arrays.asList(preferredPositionsString.split(";"));
-		
+
 			assistantList.add(new Assistant(name, unavailableMonths, frequency, preferredPositions));
 		}
-		
+
 		// ServiceAssignments will be altered by the solver, and does not need to be populated
-		List<ServiceAssignment> serviceAssignments = new ArrayList<ServiceAssignment>();
-		Long id = 0L;
+		List<ServiceAssignment> serviceAssignments = new ArrayList<>();
+		long id = 0L;
 		for (int i = 0; i<serviceList.size(); i++) {
 			Service service = serviceList.get(i);
 			for (int j = 0; j<service.getPositions().size(); j++) {
 				serviceAssignments.add(new ServiceAssignment(id++));
 			}
 		}
-		
+
 		return new AssistantSchedule(assistantList, serviceList, positionList, serviceAssignments);
 	}
-	
+
 	/* OUTPUT CLASSES */
-	
+
 	private JSONObject convertSolutionToJson(AssistantSchedule solution) {
     	JSONObject jsonData = new JSONObject();
-    	
+
     	// Add new key:value pair for each service
     	// Each service assignment should be added to the corresponding service
     	// Each service should have the name, date, time, and assigned positions filled out
-    	
+
     	List<Service> serviceList = solution.getServiceList();
     	DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     	DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm a");
-    	for (int i = 0; i < serviceList.size(); i++){
+    	for (Service element : serviceList) {
     		JSONObject service = new JSONObject();
-    		service.put("Date", serviceList.get(i).getDate().format(dateFormat));
-    		service.put("Time", serviceList.get(i).getTime().format(timeFormat));
+    		service.put("Date", element.getDate().format(dateFormat));
+    		service.put("Time", element.getTime().format(timeFormat));
     		JSONObject positions = new JSONObject();
     		service.put("Positions", positions);
-    		jsonData.put(serviceList.get(i).getName(), service);
+    		jsonData.put(element.getName(), service);
     	}
-    	
+
     	List<ServiceAssignment> assignmentList = solution.getServiceAssignmentList();
-    	for (int i = 0; i < assignmentList.size(); i++) {
-    		ServiceAssignment assignment = assignmentList.get(i);
+    	for (ServiceAssignment assignment : assignmentList) {
     		String serviceName = assignment.getService().getName();
     		String positionName = assignment.getPosition().getName();
     		String assistantName;
@@ -241,7 +248,7 @@ public class DataIO {
     		} catch (NullPointerException e) {
     			assistantName = " ";
     		}
-    		
+
     		// If the assistant name was null, then no need to update the JSON
     		if (assistantName != " ") {
     			if (jsonData.getJSONObject(serviceName).getJSONObject("Positions").has(positionName)) {
@@ -254,13 +261,13 @@ public class DataIO {
     		}
     	}
 
-    	//services = {"Service1": 
-    	//				{"Date": "2/4/24", "Time": "09:00 AM", "Positions": 
+    	//services = {"Service1":
+    	//				{"Date": "2/4/24", "Time": "09:00 AM", "Positions":
     	//															{"Lector": "Ann Brown", "Ushers": "Name1, Name2", "Cantor": "Name"}}}
-    	
+
     	return jsonData;
     }
-	
+
 	// Helper function for the writeOutputData function
 	private ArrayList<JSONObject> convertJSONtoList(JSONObject jsonData){
 		ArrayList<JSONObject> listData = new ArrayList<>();
@@ -270,10 +277,10 @@ public class DataIO {
     				listData.add(new JSONObject().put(serviceName, jsonData.getJSONObject(serviceName)));
     			});
     	Collections.sort(listData, new ServiceComparator());
-		
+
 		return listData;
 	}
-	
+
 	// Helper function to create a queue of XSSFCellStyles
 	private Queue<ArrayList<XSSFCellStyle>> generateCellStyleList(XSSFWorkbook scheduleWorkbook){
 		// Cell Styles are static, so we make a new pair (title & positions) for each color
@@ -282,11 +289,11 @@ public class DataIO {
     	Font titleFont = scheduleWorkbook.createFont();
     	titleFont.setBold(true);
     	titleFont.setFontHeightInPoints((short) 16);
-    	
+
     	// Position font style for all position styles
     	Font positionFont = scheduleWorkbook.createFont();
     	positionFont.setFontHeightInPoints((short) 14);
-    	
+
     	// Color 1: Light Red
     	ArrayList<XSSFCellStyle> style1 = new ArrayList<>();
     	XSSFCellStyle color1TitleStyle = scheduleWorkbook.createCellStyle();
@@ -297,14 +304,14 @@ public class DataIO {
     	color1TitleStyle.setFillForegroundColor(color1);
     	color1TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style1.add(color1TitleStyle);
-    
+
     	XSSFCellStyle color1PositionStyle = scheduleWorkbook.createCellStyle();
     	color1PositionStyle.setFont(positionFont);
     	color1PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     	color1PositionStyle.setFillForegroundColor(color1);
     	color1PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style1.add(color1PositionStyle);
-    	
+
     	// Color 2: Light yellow
     	ArrayList<XSSFCellStyle> style2 = new ArrayList<>();
     	XSSFCellStyle color2TitleStyle = scheduleWorkbook.createCellStyle();
@@ -315,14 +322,14 @@ public class DataIO {
     	color2TitleStyle.setFillForegroundColor(color2);
     	color2TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style2.add(color2TitleStyle);
-  
+
     	XSSFCellStyle color2PositionStyle = scheduleWorkbook.createCellStyle();
     	color2PositionStyle.setFont(positionFont);
     	color2PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     	color2PositionStyle.setFillForegroundColor(color2);
     	color2PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style2.add(color2PositionStyle);
-    	
+
     	// Color 3: Light green
     	ArrayList<XSSFCellStyle> style3 = new ArrayList<>();
     	XSSFCellStyle color3TitleStyle = scheduleWorkbook.createCellStyle();
@@ -333,14 +340,14 @@ public class DataIO {
     	color3TitleStyle.setFillForegroundColor(color3);
     	color3TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style3.add(color3TitleStyle);
-  
+
     	XSSFCellStyle color3PositionStyle = scheduleWorkbook.createCellStyle();
     	color3PositionStyle.setFont(positionFont);
     	color3PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     	color3PositionStyle.setFillForegroundColor(color3);
     	color3PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style3.add(color3PositionStyle);
-    	
+
     	// Color 4: Light blue
     	ArrayList<XSSFCellStyle> style4 = new ArrayList<>();
     	XSSFCellStyle color4TitleStyle = scheduleWorkbook.createCellStyle();
@@ -351,14 +358,14 @@ public class DataIO {
     	color4TitleStyle.setFillForegroundColor(color4);
     	color4TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style4.add(color4TitleStyle);
-  
+
     	XSSFCellStyle color4PositionStyle = scheduleWorkbook.createCellStyle();
     	color4PositionStyle.setFont(positionFont);
     	color4PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     	color4PositionStyle.setFillForegroundColor(color4);
     	color4PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style4.add(color4PositionStyle);
-    	
+
     	// Color 5: Light purple
     	ArrayList<XSSFCellStyle> style5 = new ArrayList<>();
     	XSSFCellStyle color5TitleStyle = scheduleWorkbook.createCellStyle();
@@ -369,49 +376,48 @@ public class DataIO {
     	color5TitleStyle.setFillForegroundColor(color5);
     	color5TitleStyle.setBorderBottom(BorderStyle.MEDIUM);
     	style5.add(color5TitleStyle);
-    	
+
     	XSSFCellStyle color5PositionStyle = scheduleWorkbook.createCellStyle();
     	color5PositionStyle.setFont(positionFont);
     	color5PositionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     	color5PositionStyle.setFillForegroundColor(color5);
     	color5PositionStyle.setBorderBottom(BorderStyle.THIN);
     	style5.add(color5PositionStyle);
-    	
+
     	// Used to alternate cell colors between services to make it easier to read
     	Queue<ArrayList<XSSFCellStyle>> styleQueue = new LinkedList<>();
     	styleQueue.add(style1);
     	styleQueue.add(style2);
     	styleQueue.add(style3);
     	styleQueue.add(style4);
-    	
+
 		return styleQueue;
 	}
-	
-	
-    private void writeOutputData(JSONObject jsonData) {   
-    	
+
+
+    private void writeOutputData(JSONObject jsonData) {
+
     	ArrayList<JSONObject> listData = convertJSONtoList(jsonData);
-    	
+
     	XSSFWorkbook scheduleWorkbook = new XSSFWorkbook();
     	XSSFSheet scheduleSheet = scheduleWorkbook.createSheet("Schedule");
-    	
+
     	// Generates all of the styles used in the workbook
     	Queue<ArrayList<XSSFCellStyle>> styleQueue = generateCellStyleList(scheduleWorkbook);
-    	
+
     	// Use int arrays to circumvent the issues with altering local variables in the below loops
     	int[] rowNum = new int[1];
     	int[] colNum = new int[1];
-    	
-    	for (int i = 0; i < listData.size(); i++) {
-    		JSONObject fullService = listData.get(i);
+
+    	for (JSONObject fullService : listData) {
     		// Since there should only be a single key:value pair, the service name is the first index of the names array
     		String serviceName = fullService.names().getString(0);
     		JSONObject service = fullService.getJSONObject(serviceName);
-    		
+
     		// Get the style for the service
     		ArrayList<XSSFCellStyle> serviceStyle = styleQueue.poll();
     		styleQueue.add(serviceStyle);
-    		
+
     		// Create title row (contains date and name of service)
 			Row titleRow = scheduleSheet.createRow(rowNum[0]++);
 			String serviceDate = service.getString("Date");
@@ -423,11 +429,11 @@ public class DataIO {
 			nameCell.setCellValue(serviceName);
 			// Reset the column number for the next row
 			colNum[0] = 0;
-			
+
 			// Iterate over positions and create rows for each one
 			JSONObject positions = service.getJSONObject("Positions");
 			String[] positionNames = JSONObject.getNames(positions);
-			Queue<String> possiblePositions = new LinkedList<String>();
+			Queue<String> possiblePositions = new LinkedList<>();
 			possiblePositions.add("Lector");
 			possiblePositions.add("Cantor");
 			possiblePositions.add("Head Usher");
@@ -437,8 +443,8 @@ public class DataIO {
 			possiblePositions.add("Communion Server");
 			possiblePositions.add("Greeter");
 			possiblePositions.add("Refreshments");
-			
-			possiblePositions.forEach(pPositionName -> 
+
+			possiblePositions.forEach(pPositionName ->
 			{
 				Row positionRow = scheduleSheet.createRow(rowNum[0]++);
 				Cell positionNameCell = positionRow.createCell(colNum[0]++);
@@ -456,7 +462,7 @@ public class DataIO {
 				colNum[0] = 0;
 			});
     	}
-    	
+
     	// Size the columns to match the inputs given
     	scheduleSheet.autoSizeColumn(0);
     	scheduleSheet.autoSizeColumn(1);
@@ -470,6 +476,6 @@ public class DataIO {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } 
+        }
     }
 }

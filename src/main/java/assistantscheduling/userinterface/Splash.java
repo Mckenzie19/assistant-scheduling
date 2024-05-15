@@ -1,10 +1,15 @@
 package assistantscheduling.userinterface;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.SplashScreen;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Splash extends Frame implements ActionListener{
-	
+
 	private static final long serialVersionUID = 2L;
 
 	static void renderSplashFrame(Graphics2D g, int frame) {
@@ -40,8 +45,9 @@ public class Splash extends Frame implements ActionListener{
 	        setVisible(true);
 	        toFront();
 	    }
-	 
-	    public void actionPerformed(ActionEvent ae) {
+
+	    @Override
+		public void actionPerformed(ActionEvent ae) {
 	        System.exit(0);
 	    }
 }

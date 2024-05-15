@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: assistantscheduling.AssistantSchedulingApp
+Application-Name: Assistant Scheduling
 SplashScreen-Image: images/splash.gif

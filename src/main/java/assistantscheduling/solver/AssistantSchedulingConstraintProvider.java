@@ -1,17 +1,9 @@
 package assistantscheduling.solver;
 
-import assistantscheduling.domain.Assistant;
-import assistantscheduling.domain.Position;
-import assistantscheduling.domain.ServiceAssignment;
-
-import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
-import org.optaplanner.core.api.score.stream.Constraint;
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.*;
-import org.optaplanner.core.api.score.stream.ConstraintFactory;
-import org.optaplanner.core.api.score.stream.ConstraintProvider;
-import org.optaplanner.core.api.score.stream.Joiners;
-
-import static org.optaplanner.core.api.score.stream.Joiners.*;
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.countBi;
+import static org.optaplanner.core.api.score.stream.Joiners.equal;
+import static org.optaplanner.core.api.score.stream.Joiners.filtering;
 
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
@@ -20,6 +12,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
+import org.optaplanner.core.api.score.stream.Constraint;
+import org.optaplanner.core.api.score.stream.ConstraintFactory;
+import org.optaplanner.core.api.score.stream.ConstraintProvider;
+import org.optaplanner.core.api.score.stream.Joiners;
+
+import assistantscheduling.domain.Assistant;
+import assistantscheduling.domain.Position;
+import assistantscheduling.domain.ServiceAssignment;
 
 public class AssistantSchedulingConstraintProvider implements ConstraintProvider{
 
@@ -40,12 +42,12 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	                // Check if assigned position is one the assistant is okay with
 	                positionConstraint(constraintFactory),
 	        		// Check that each position is only assigned once per service (NOTE that a type of position may occur more than once per service)
-	                onePositionConstraint(constraintFactory),	                
-	                
+	                onePositionConstraint(constraintFactory),
+
 	                // Medium Constraints
 	                // Check if all assignments have assistants
 	                unassignedConstraint(constraintFactory),
-	                
+
 	                // Soft Constraints
 	                // Check if assistant was scheduled to help two weeks in a row
 	                frequentAssignmentsConstraint(constraintFactory),
@@ -62,7 +64,7 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	    		   .penalize(HardMediumSoftScore.ONE_HARD)
 	    		   .asConstraint("Availability Constraint");
 	    }
-	    
+
         // Checks for >monthly scheduling for those who don't want it
 	    private Constraint monthlyConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEachUniquePair(ServiceAssignment.class,
@@ -75,7 +77,7 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	    			.penalize(HardMediumSoftScore.ONE_HARD)
 	    			.asConstraint("Monthly Assignment Constraint");
 	    }
-	    
+
         // Checks for >quarterly scheduling for those who don't want it
 	    private Constraint quarterlyConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEachUniquePair(ServiceAssignment.class,
@@ -97,7 +99,7 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	                .penalize(HardMediumSoftScore.ONE_HARD)
 	    			.asConstraint("Quarterly Assignment Constraint");
 	    }
-	    
+
         // Checks for >twice yearly scheduling for those who don't want it
 	    private Constraint twiceYearlyConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEachUniquePair(ServiceAssignment.class,
@@ -115,7 +117,7 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	                .penalize(HardMediumSoftScore.ONE_HARD)
 	    			.asConstraint("Twice Yearly Assignment Constraint");
 	    }
-	    
+
         // Check if assistants are double booked
 	    private Constraint bookingConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEach(ServiceAssignment.class)
@@ -124,7 +126,7 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	    			.penalize(HardMediumSoftScore.ONE_HARD)
 	    			.asConstraint("Booking Constraint");
 	    }
-	    
+
         // Check if assigned position is one the assistant is okay with
 	    private Constraint positionConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEach(ServiceAssignment.class)
@@ -133,25 +135,25 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	    			.penalize(HardMediumSoftScore.ONE_HARD)
 	    			.asConstraint("Position Constraint");
 	    }
-	    
+
 	    // preferredPositions.stream().map(Position::new).collect(Collectors.toList())
 		// Check that each position is only assigned once per service (NOTE that a type of position may occur more than once per service)
 	    private Constraint onePositionConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEach(ServiceAssignment.class)
 	    			.groupBy(ServiceAssignment::getService, ServiceAssignment::getPosition, count())
-	    			.filter((service, position, count) -> 
+	    			.filter((service, position, count) ->
 	    				{
 	    					// Get the names of the positions for the service
 	    					List<String> positions = service.getPositions().stream().map(Position::getName).collect(Collectors.toList());
 	    					// Check how many times the specific position occurs in the service
 	    					int posCount = Collections.frequency(positions, position.getName());
-	    					// See if that count is higher than the number of times the position was actually assigned 
+	    					// See if that count is higher than the number of times the position was actually assigned
 	    					return count > posCount;
 	    				})
 	    			.penalize(HardMediumSoftScore.ONE_HARD)
 	    			.asConstraint("One Position per Service Constraint");
 	    }
-	    
+
         // Check if all assignments have assistants
 	    private Constraint unassignedConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEachIncludingNullVars(ServiceAssignment.class)
@@ -159,17 +161,17 @@ public class AssistantSchedulingConstraintProvider implements ConstraintProvider
 	    			.penalize(HardMediumSoftScore.ONE_MEDIUM)
 	    			.asConstraint("Unassigned Assistant Constraint");
 	    }
-	    
+
         // Check if assistant was scheduled to help two weeks in a row
 	    private Constraint frequentAssignmentsConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEachUniquePair(ServiceAssignment.class,
 	    				equal(ServiceAssignment::getAssistant),
-	    				filtering((firstAssignment, secondAssignment) -> 
+	    				filtering((firstAssignment, secondAssignment) ->
 	    						ChronoUnit.DAYS.between(firstAssignment.getService().getDate(), secondAssignment.getService().getDate()) < 10))
 	    			.penalize(HardMediumSoftScore.ONE_SOFT)
 	    			.asConstraint("Frequent Assignments Constraint");
 	    }
-	    
+
         // Check if all assistants are utilized in the schedule
 		private Constraint unusedAssistantsConstraint(ConstraintFactory constraintFactory) {
 	    	return constraintFactory.forEach(Assistant.class)
