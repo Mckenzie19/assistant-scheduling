@@ -16,6 +16,7 @@ import java.util.Queue;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -49,12 +50,19 @@ public class DataIO {
 
 	/* PUBLIC CLASSES */
 
-	public File selectFile(JFrame frame) {
+	public File selectFile(JFrame frame, boolean save) {
         JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("EXCEL Files", "xlsx");
+        fileChooser.setFileFilter(fileFilter);
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setDialogTitle("Select a file");
-        int result = fileChooser.showOpenDialog(frame);
-
+        fileChooser.setDialogTitle("Select file");
+        int result = JFileChooser.CANCEL_OPTION;
+        if (!save) {
+        	result = fileChooser.showOpenDialog(frame);
+        } else {
+        	result = fileChooser.showSaveDialog(frame);
+        }
+        
         if (result == JFileChooser.APPROVE_OPTION) {
             return fileChooser.getSelectedFile();
         } else {
@@ -65,21 +73,24 @@ public class DataIO {
 	public void setInputFile(File file) {
 		inputFile = file;
 	}
+	
+	public void setOutputFile(File file) {
+		outputFile = file;
+	}
 
 	public AssistantSchedule getData() {
 		JSONObject jsonData = getInputDataFromFile();
 		return convertJsonToProblem(jsonData);
 	}
 
-	public void saveSolution(AssistantSchedule solution, File file) {
-		outputFile = file;
+	public void saveSolution(AssistantSchedule solution) {
 		JSONObject jsonData = convertSolutionToJson(solution);
 		writeOutputData(jsonData);
 	}
+	
+	
 
 	/* INPUT CLASSES */
-
-
 
 	private JSONObject getInputDataFromFile() {
 		 JSONObject jsonWorkbook = new JSONObject();

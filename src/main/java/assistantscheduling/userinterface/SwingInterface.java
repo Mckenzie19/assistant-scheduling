@@ -64,7 +64,7 @@ public class SwingInterface extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JButton btnImportData = new JButton("Import Schedule Data");
+		JButton btnImportData = new JButton("Set Service and Assistant Information");
 		btnImportData.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -75,7 +75,7 @@ public class SwingInterface extends JFrame {
 		        inputFrame.setLocationRelativeTo(null);  // Center the window
 
 		        // Call the method to select a file
-		        File selectedFile = dataHandler.selectFile(inputFrame);
+		        File selectedFile = dataHandler.selectFile(inputFrame, false);
 
 		        // Process the selected file (if any)
 		        if (selectedFile != null) {
@@ -90,13 +90,6 @@ public class SwingInterface extends JFrame {
 
 		        // Close the application window after file selection
 		        inputFrame.dispose();
-
-		        problem = dataHandler.getData();
-		        if (problem == null) {
-		        	JFrame errorFrame = new JFrame("IMPORT ERROR");
-		        	JOptionPane.showMessageDialog(errorFrame, "Error occured when importing data file. Please try again.", "IMPORT ERROR", JOptionPane.ERROR_MESSAGE);
-		        	errorFrame.dispose();
-		        }
 			}
 		});
 		btnImportData.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
@@ -104,24 +97,46 @@ public class SwingInterface extends JFrame {
 		btnImportData.setBounds(55, 27, 170, 29);
 		contentPane.add(btnImportData);
 
-		JButton btnGenerateNewSchedule = new JButton("Build New Schedule");
+		JButton btnGenerateNewSchedule = new JButton("Build Schedule");
 		btnGenerateNewSchedule.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Create a new JFrame container.
-		        JFrame outputFrame = new JFrame("Select Data File");
+		        JFrame outputFrame = new JFrame("Build Schedule");
 		        outputFrame.setSize(400, 300);
 		        outputFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		        outputFrame.setLocationRelativeTo(null);  // Center the window
+		        
+		        // Check if schedule data file is present.
+		        URL dataURL = SwingInterface.class.getClassLoader().getResource("data/data.xlsx");
+		        if (dataURL == null) {
+		            JOptionPane.showMessageDialog(outputFrame, "No data present. Please set assistant and service data before building schedule.", "SCHEDULE BUILDING ERROR", JOptionPane.ERROR_MESSAGE);
+		            outputFrame.dispose();
+		            return;
+		        }
+		        
+		        // TODO: Confirm schedule data. If correct, build schedule. If not, set new data.
+		        
+		        
+		        problem = dataHandler.getData();
+		        if (problem == null) {
+		        	JFrame errorFrame = new JFrame("IMPORT ERROR");
+		        	JOptionPane.showMessageDialog(errorFrame, "Error occured when importing schedule data. Please try again.", "IMPORT ERROR", JOptionPane.ERROR_MESSAGE);
+		        	errorFrame.dispose();
+		        }
+		        
+		        // TODO: Setup a waiting screen during solving
+		        
 
-		        // Call the method to select a file
-		        File selectedFile = dataHandler.selectFile(outputFrame);
+		        // Call the method to select a save file
+		        File outputFile = dataHandler.selectFile(outputFrame, true);
 
 		        // Process the selected file (if any)
-		        if (selectedFile != null) {
-		            JOptionPane.showMessageDialog(outputFrame, "Selected file: " + selectedFile.getAbsolutePath());
+		        if (outputFile != null) {
+		            JOptionPane.showMessageDialog(outputFrame, "Selected file: " + outputFile.getAbsolutePath());
+		            dataHandler.setOutputFile(outputFile);
 		        } else {
-		            JOptionPane.showMessageDialog(outputFrame, "No file was selected. Aborting schedule building.", "FILE SELECTION ERROR", JOptionPane.ERROR_MESSAGE);
+		            JOptionPane.showMessageDialog(outputFrame, "No save file selected. Aborting schedule building.", "SAVE ERROR", JOptionPane.ERROR_MESSAGE);
 		            // Close the application window after file selection
 			        outputFrame.dispose();
 		            return;
@@ -129,7 +144,7 @@ public class SwingInterface extends JFrame {
 
 	            JOptionPane.showMessageDialog(outputFrame, "Building schedule. Please do not close window or program!", "Building Schedule", JOptionPane.INFORMATION_MESSAGE);
 				AssistantSchedule solution = solver.solve(problem);
-		        dataHandler.saveSolution(solution, selectedFile);
+		        dataHandler.saveSolution(solution);
 
 	            JOptionPane.showMessageDialog(outputFrame, "Schedule complete!", "Building Schedule", JOptionPane.INFORMATION_MESSAGE);
 			}
