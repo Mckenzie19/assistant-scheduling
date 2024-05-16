@@ -1,5 +1,6 @@
 package assistantscheduling;
 
+import java.awt.EventQueue;
 import java.time.Duration;
 
 import javax.swing.SwingUtilities;
@@ -15,7 +16,7 @@ import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.domain.ServiceAssignment;
 import assistantscheduling.solver.AssistantSchedulingConstraintProvider;
 import assistantscheduling.userinterface.Splash;
-import assistantscheduling.userinterface.SwingInterface;
+import assistantscheduling.userinterface.MainWindow;
 
 public class AssistantSchedulingApp {
 
@@ -24,19 +25,6 @@ public class AssistantSchedulingApp {
 
 	    public static void main(String[] args) {
 	    	LOGGER.info("Loading application... ");
-	    	
-	    	// Create a runnable event to create the GUI
-	    	final Runnable createGUI = new Runnable() {
-		    	public void run() {
-		    		try {
-	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	                } catch (Exception ex) {
-	                    ex.printStackTrace();
-	                }
-		    		SwingInterface frame = new SwingInterface(solver);
-					frame.setVisible(true);
-		    	}
-		    };
 		    
 		    // Setup the Opta-planner solver
 	    	SolverFactory<AssistantSchedule> solverFactory = SolverFactory.create(new SolverConfig()
@@ -48,16 +36,21 @@ public class AssistantSchedulingApp {
 	    	solver = solverFactory.buildSolver();
 	    	
 	    	// Splash splash = new Splash();
-	    	
-	    	Thread appThread = new Thread() {
-	    		public void run() {
-	    			try {
-	    				SwingUtilities.invokeLater(createGUI);
-	    			} catch (Exception e) {
-	    				e.printStackTrace();
-	    			}
-	    		}
-	    	};
-	    	appThread.start();
+	    	EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	                } catch (Exception e) {
+	                    e.printStackTrace();
+	                }
+					
+					try {
+						MainWindow applicationWindow = new MainWindow(solver);
+						applicationWindow.getFrame().setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 	    }
 }

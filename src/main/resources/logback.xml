@@ -20,9 +20,10 @@
         </encoder>
     </appender>
     
-    <logger name="a.AssistantSchedulingApp" level="DEBUG"/> 
+    <logger name="assistant-scheduling.AssistantSchedulingApp" level="DEBUG"/> 
+    <logger name="assistant-scheduling.SwingInterface" level="DEBUG"/> 
     
-    <root level="info" additivity="false">
+    <root level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"></appender-ref>
     </root>
