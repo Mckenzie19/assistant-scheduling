@@ -59,7 +59,5 @@ public class AssistantSchedulingApp {
 	    		}
 	    	};
 	    	appThread.start();
-	    
-	    	LOGGER.info("Closing application... ");
 	    }
 }
