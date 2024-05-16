@@ -1,7 +1,9 @@
 package assistantscheduling;
 
-import java.awt.EventQueue;
 import java.time.Duration;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
@@ -18,29 +20,46 @@ import assistantscheduling.userinterface.SwingInterface;
 public class AssistantSchedulingApp {
 
 	 private static final Logger LOGGER = LoggerFactory.getLogger(AssistantSchedulingApp.class);
+	 public static Solver<AssistantSchedule> solver;
 
 	    public static void main(String[] args) {
 	    	LOGGER.info("Loading application... ");
-	    	Splash splash = new Splash();
-	    	EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-				    	SolverFactory<AssistantSchedule> solverFactory = SolverFactory.create(new SolverConfig()
-		                .withSolutionClass(AssistantSchedule.class)
-		                .withEntityClasses(ServiceAssignment.class)
-		                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
-		                // Sets how long the solver will run for
-		                .withTerminationSpentLimit(Duration.ofMinutes(5)));
-				    	Solver<AssistantSchedule> solver = solverFactory.buildSolver();
-
-						SwingInterface frame = new SwingInterface(solver);
-						frame.setVisible(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
+	    	
+	    	// Create a runnable event to create the GUI
+	    	final Runnable createGUI = new Runnable() {
+		    	public void run() {
+		    		try {
+	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	                } catch (Exception ex) {
+	                    ex.printStackTrace();
+	                }
+		    		SwingInterface frame = new SwingInterface(solver);
+					frame.setVisible(true);
+		    	}
+		    };
+		    
+		    // Setup the Opta-planner solver
+	    	SolverFactory<AssistantSchedule> solverFactory = SolverFactory.create(new SolverConfig()
+	                .withSolutionClass(AssistantSchedule.class)
+	                .withEntityClasses(ServiceAssignment.class)
+	                .withConstraintProviderClass(AssistantSchedulingConstraintProvider.class)
+	                // Sets how long the solver will run for
+	                .withTerminationSpentLimit(Duration.ofMinutes(5)));
+	    	solver = solverFactory.buildSolver();
+	    	
+	    	// Splash splash = new Splash();
+	    	
+	    	Thread appThread = new Thread() {
+	    		public void run() {
+	    			try {
+	    				SwingUtilities.invokeLater(createGUI);
+	    			} catch (Exception e) {
+	    				e.printStackTrace();
+	    			}
+	    		}
+	    	};
+	    	appThread.start();
+	    
 	    	LOGGER.info("Closing application... ");
 	    }
 }
