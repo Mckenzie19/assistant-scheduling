@@ -2,6 +2,10 @@ package assistantscheduling.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -10,21 +14,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.awt.event.ActionEvent;
-import java.awt.Color;
-import javax.swing.BoxLayout;
 import javax.swing.SwingConstants;
+
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
-import java.awt.GridLayout;
-import com.jgoodies.forms.layout.FormSpecs;
 
 public class DataSetupDialog extends JDialog {
 

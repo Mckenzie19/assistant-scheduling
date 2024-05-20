@@ -48,6 +48,12 @@
 		    <artifactId>json</artifactId>
 		    <version>20240303</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
+		<dependency>
+		    <groupId>com.jgoodies</groupId>
+		    <artifactId>jgoodies-forms</artifactId>
+		    <version>1.9.0</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 		    <groupId>org.slf4j</groupId>
