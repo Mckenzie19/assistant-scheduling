@@ -12,6 +12,7 @@ import java.io.File;
 import java.net.URL;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -153,42 +154,10 @@ public class MainWindow{
 	private void setScheduleData() {
 		// 1: Open window with information such as Selected Assistant Data File, Selected Service Date Range, Special Service Dates, etc
 		// 2: Make button for selected the assistant file, selecting service date range, and adding special services
-		
-		// TODO: This currently kills the main window, fix!
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					DataSetupWindow frame = new DataSetupWindow();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
-		
-		// Create a new JFrame container.
-        JFrame inputFrame = new JFrame("Select Data File");
-        inputFrame.setSize(400, 300);
-        inputFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        inputFrame.setLocationRelativeTo(null);  // Center the window
 
-        // Call the method to select a file
-        File selectedFile = dataHandler.selectFile(inputFrame, false);
-
-        // Process the selected file (if any)
-        if (selectedFile != null) {
-            JOptionPane.showMessageDialog(inputFrame, "Selected file: " + selectedFile.getAbsolutePath());
-            dataHandler.setInputFile(selectedFile);
-        } else {
-            JOptionPane.showMessageDialog(inputFrame, "No file was selected. Aborting data import.", "IMPORT ERROR", JOptionPane.ERROR_MESSAGE);
-            inputFrame.dispose();
-            return;
-        }
-
-        // Close the application window after file selection
-        inputFrame.dispose();
-        return;
+		DataSetupDialog dialog = new DataSetupDialog(frame, "Set Assistant and Service Data", true, dataHandler);
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setVisible(true);
 	}
 
 }
