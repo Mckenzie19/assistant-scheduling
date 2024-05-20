@@ -45,9 +45,16 @@ public class DataSetupDialog extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		
 		JButton btnPg1Next = new JButton("Next >>");
-		btnPg1Next.setBounds(503, 151, 91, 29);
+		btnPg1Next.setBounds(504, 150, 90, 30);
 		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(btnPg1Next);
+		
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
+		cancelButton.setLocation(5, 150);
+		cancelButton.setSize(90, 30);
+		cancelButton.setActionCommand("Cancel");
+		contentPanel.add(cancelButton);
 		
 		// Used to get information about the assistant data file. Has a label indicating what this is, 
 		// a place for the file name to appear, and a button for choosing the file

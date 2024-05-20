@@ -52,7 +52,13 @@
 		<dependency>
 		    <groupId>com.jgoodies</groupId>
 		    <artifactId>jgoodies-forms</artifactId>
-		    <version>1.9.0</version>
+		    <version>1.8.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-swing -->
+		<dependency>
+		    <groupId>com.miglayout</groupId>
+		    <artifactId>miglayout-swing</artifactId>
+		    <version>11.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
