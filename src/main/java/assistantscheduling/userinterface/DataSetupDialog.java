@@ -1,32 +1,32 @@
 package assistantscheduling.userinterface;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.awt.event.ActionEvent;
-import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import javax.swing.border.EtchedBorder;
-import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.miginfocom.swing.MigLayout;
 
 public class DataSetupDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	static DataIO dataHandler;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupDialog.class);
+	private static DataIO dataHandler;
 
 	/**
 	 * Create the dialog.
@@ -34,148 +34,89 @@ public class DataSetupDialog extends JDialog {
 	public DataSetupDialog(JFrame frame, String title, boolean modal, DataIO dataHandler) {
 		super(frame, title, modal);
 		DataSetupDialog.dataHandler = dataHandler;
-		
-		setSize(600, 214);
+		setSize(600, 220);
         setLocationRelativeTo(null);
-        
-        getContentPane().setLayout(new BorderLayout());
-		contentPanel.setLayout(null);
-		contentPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new MigLayout(
+				"wrap 3",     // Layout constraints
+				"5[right shrink]5[grow]5[shrink]5", // Column constraints
+				"15[shrink][shrink][shrink]push[]5")); // Row constraints
 		
-		JButton btnPg1Next = new JButton("Next >>");
-		btnPg1Next.setBounds(504, 150, 90, 30);
-		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		contentPanel.add(btnPg1Next);
+		// Add components to dialog
 		
-		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		cancelButton.setLocation(5, 150);
-		cancelButton.setSize(90, 30);
-		cancelButton.setActionCommand("Cancel");
-		contentPanel.add(cancelButton);
-		
-		// Used to get information about the assistant data file. Has a label indicating what this is, 
-		// a place for the file name to appear, and a button for choosing the file
-		JPanel AssistantPanel = new JPanel();
-		AssistantPanel.setBounds(0, 0, 600, 46);
-		contentPanel.add(AssistantPanel);
-		FormLayout fl_AssistantPanel = new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("125px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("355px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("100px"),},
-			new RowSpec[] {
-				RowSpec.decode("46px"),});
-		AssistantPanel.setLayout(fl_AssistantPanel);
-		
+		// First Row
 		JLabel lblAssistantData = new JLabel("Assistant Data File");
 		lblAssistantData.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		AssistantPanel.add(lblAssistantData, "1, 1, right, center");
+		contentPanel.add(lblAssistantData, "shrinkx");
 		
-		JLabel lblAssisDataFileName = new JLabel("                                                                                                                   ");
-		lblAssisDataFileName.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
-		lblAssisDataFileName.setSize(300, 30);
-		lblAssisDataFileName.setHorizontalAlignment(SwingConstants.LEFT);
+		JLabel lblAssisDataFileName = new JLabel("     ");
+		lblAssisDataFileName.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblAssisDataFileName.setBackground(Color.WHITE);
 		lblAssisDataFileName.setOpaque(true);
-		AssistantPanel.add(lblAssisDataFileName, "3, 1, left, center");
+		contentPanel.add(lblAssisDataFileName, "growx");
 		
 		JButton btnSelectFile = new JButton("Select File");
 		btnSelectFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pickAssistantFile();
+				pickAssistantFile(lblAssisDataFileName);
 			}
 		});
 		btnSelectFile.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
-		AssistantPanel.add(btnSelectFile, "5, 1, center, center");
-		
-		// Used to select the date range of Sunday services to schedule for. Includes a label indicated what this is, 
-		// a place for the selected date ranges to appear, and a button for selecting the date ranges
-		JPanel ServicePanel = new JPanel();
-		ServicePanel.setBounds(0, 50, 600, 50);
-		contentPanel.add(ServicePanel);
-		ServicePanel.setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("150px"),
-				ColumnSpec.decode("300px"),
-				ColumnSpec.decode("150px"),},
-			new RowSpec[] {
-				RowSpec.decode("50px"),}));
-		
+		contentPanel.add(btnSelectFile, "shrinkx");
+
+		// Second Row
 		JLabel lblServiceDateRange = new JLabel("Service Date Range");
-		lblServiceDateRange.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblServiceDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		ServicePanel.add(lblServiceDateRange, "1, 1, center, center");
-		
+		contentPanel.add(lblServiceDateRange, "shrinkx");
+
 		// Place 100 blank spaces for now because otherwise the background will not show up or will be sized to the entire cell
-		JLabel lblSelectedDateRange = new JLabel("                                                                                                    ");
-		lblSelectedDateRange.setSize(100, 30);
-		lblSelectedDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
-		lblSelectedDateRange.setHorizontalAlignment(SwingConstants.LEFT);
+		JLabel lblSelectedDateRange = new JLabel("     ");
+		lblSelectedDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblSelectedDateRange.setBackground(Color.WHITE);
 		lblSelectedDateRange.setOpaque(true);
-		ServicePanel.add(lblSelectedDateRange, "2, 1, center, center");
+		contentPanel.add(lblSelectedDateRange, "growx");
 		
 		JButton btnSelectDateRange = new JButton("Select Date Range");
 		btnSelectDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
-		ServicePanel.add(btnSelectDateRange, "3, 1, center, center");
+		contentPanel.add(btnSelectDateRange, "shrinkx");
 		
-		
-		// Optional place to select additional services outside of the generated Sunday services from the previous section. Includes a
-		// checkbox to indicate if this option is desired as well as select the dates desired and a label to show selected services
-		JPanel AdditionalServicesPanel = new JPanel();
-		AdditionalServicesPanel.setBounds(0, 100, 600, 50);
-		contentPanel.add(AdditionalServicesPanel);
-		AdditionalServicesPanel.setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("225px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("365px"),},
-			new RowSpec[] {
-				RowSpec.decode("50px"),}));
-		
+		// Third Row
 		JCheckBox chckbxSelectAdditionalServices = new JCheckBox("Select Additional Service Dates");
-		chckbxSelectAdditionalServices.setHorizontalAlignment(SwingConstants.CENTER);
-		AdditionalServicesPanel.add(chckbxSelectAdditionalServices, "1, 1, center, center");
-		chckbxSelectAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
+		chckbxSelectAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		contentPanel.add(chckbxSelectAdditionalServices, "shrinkx");
 		
-		JLabel lblNewLabel = new JLabel("                                                                                                              ");
-		lblNewLabel.setSize(300, 30);
-		lblNewLabel.setBackground(Color.WHITE);
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
-		lblNewLabel.setOpaque(true);
-		AdditionalServicesPanel.add(lblNewLabel, "3, 1, left, center");
+		JLabel lblAdditionalServices = new JLabel("     ");
+		lblAdditionalServices.setBackground(Color.WHITE);
+		lblAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		lblAdditionalServices.setOpaque(true);
+		contentPanel.add(lblAdditionalServices, "span 2,growx");
+
+		// Fourth Row
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		btnCancel.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
+		contentPanel.add(btnCancel, "tag cancel,alignx left");
 		
+		JButton btnPg1Next = new JButton("Next >>");
+		btnPg1Next.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				LOGGER.info("Selected Page 1 Next button");
+			}
+		});
+		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
+		contentPanel.add(btnPg1Next, "skip 1,right,tag next");
 		
-		
-//		setBounds(100, 100, 450, 300);
-//		getContentPane().setLayout(new BorderLayout());
-//		contentPanel.setLayout(new FlowLayout());
-//		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-//		getContentPane().add(contentPanel, BorderLayout.CENTER);
-//		{
-//			JPanel buttonPane = new JPanel();
-//			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-//			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-//			{
-//				JButton okButton = new JButton("OK");
-//				okButton.setActionCommand("OK");
-//				buttonPane.add(okButton);
-//				getRootPane().setDefaultButton(okButton);
-//			}
-//			{
-//				JButton cancelButton = new JButton("Cancel");
-//				cancelButton.setActionCommand("Cancel");
-//				buttonPane.add(cancelButton);
-//			}
-//		}
 	}
 	
-	private void pickAssistantFile() {
+	private void pickAssistantFile(JLabel label) {
 		// Create a new JFrame container.
-        JFrame inputFrame = new JFrame("Select Data File");
+        JFrame inputFrame = new JFrame("Select Assistant Data File");
         inputFrame.setSize(400, 300);
         inputFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         inputFrame.setLocationRelativeTo(null);  // Center the window
@@ -185,15 +126,11 @@ public class DataSetupDialog extends JDialog {
 
         // Process the selected file (if any)
         if (selectedFile != null) {
-            JOptionPane.showMessageDialog(inputFrame, "Selected file: " + selectedFile.getAbsolutePath());
-            dataHandler.setInputFile(selectedFile);
-        } else {
-            JOptionPane.showMessageDialog(inputFrame, "No file was selected. Aborting data import.", "IMPORT ERROR", JOptionPane.ERROR_MESSAGE);
-            inputFrame.dispose();
-            return;
+            label.setText(selectedFile.getName());
         }
 
         // Close the application window after file selection
         inputFrame.dispose();
 	}
+
 }
