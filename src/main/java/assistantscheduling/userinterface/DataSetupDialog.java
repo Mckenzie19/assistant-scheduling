@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.time.LocalDate;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -23,11 +24,24 @@ import net.miginfocom.swing.MigLayout;
 
 public class DataSetupDialog extends JDialog {
 
-	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
+	private DataFileCreator dataFileCreator = new DataFileCreator();
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupDialog.class);
 	private static DataIO dataHandler;
-
+	
+	// Declare dialog components
+	JLabel lblAssistantData;
+	JLabel lblAssisDataFileName;
+	JButton btnSelectFile;
+	JLabel lblServiceDateRange;
+	JLabel lblSelectedDateRange;
+	JButton btnSelectDateRange;
+	JCheckBox chckbxSelectAdditionalServices;
+	JLabel lblAdditionalServices;
+	JButton btnCancel;
+	JButton btnPg1Next;
+	
 	/**
 	 * Create the dialog.
 	 */
@@ -47,17 +61,17 @@ public class DataSetupDialog extends JDialog {
 		// Add components to dialog
 		
 		// First Row
-		JLabel lblAssistantData = new JLabel("Assistant Data File");
+		lblAssistantData = new JLabel("Assistant Data File");
 		lblAssistantData.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(lblAssistantData, "shrinkx");
 		
-		JLabel lblAssisDataFileName = new JLabel("     ");
+		lblAssisDataFileName = new JLabel("     ");
 		lblAssisDataFileName.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblAssisDataFileName.setBackground(Color.WHITE);
 		lblAssisDataFileName.setOpaque(true);
 		contentPanel.add(lblAssisDataFileName, "growx");
 		
-		JButton btnSelectFile = new JButton("Select File");
+		btnSelectFile = new JButton("Select File");
 		btnSelectFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pickAssistantFile(lblAssisDataFileName);
@@ -66,35 +80,42 @@ public class DataSetupDialog extends JDialog {
 		btnSelectFile.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
 		contentPanel.add(btnSelectFile, "shrinkx");
 
+		
 		// Second Row
-		JLabel lblServiceDateRange = new JLabel("Service Date Range");
+		lblServiceDateRange = new JLabel("Service Date Range");
 		lblServiceDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(lblServiceDateRange, "shrinkx");
 
-		// Place 100 blank spaces for now because otherwise the background will not show up or will be sized to the entire cell
-		JLabel lblSelectedDateRange = new JLabel("     ");
+		lblSelectedDateRange = new JLabel("     ");
 		lblSelectedDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblSelectedDateRange.setBackground(Color.WHITE);
 		lblSelectedDateRange.setOpaque(true);
 		contentPanel.add(lblSelectedDateRange, "growx");
 		
-		JButton btnSelectDateRange = new JButton("Select Date Range");
+		btnSelectDateRange = new JButton("Select Date Range");
 		btnSelectDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
+		btnSelectDateRange.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectDateRange();
+			}
+		});
 		contentPanel.add(btnSelectDateRange, "shrinkx");
 		
+		
 		// Third Row
-		JCheckBox chckbxSelectAdditionalServices = new JCheckBox("Select Additional Service Dates");
+		chckbxSelectAdditionalServices = new JCheckBox("Select Additional Service Dates");
 		chckbxSelectAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		contentPanel.add(chckbxSelectAdditionalServices, "shrinkx");
 		
-		JLabel lblAdditionalServices = new JLabel("     ");
+		lblAdditionalServices = new JLabel("     ");
 		lblAdditionalServices.setBackground(Color.WHITE);
 		lblAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblAdditionalServices.setOpaque(true);
 		contentPanel.add(lblAdditionalServices, "span 2,growx");
 
+		
 		// Fourth Row
-		JButton btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -103,7 +124,7 @@ public class DataSetupDialog extends JDialog {
 		btnCancel.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(btnCancel, "tag cancel,alignx left");
 		
-		JButton btnPg1Next = new JButton("Next >>");
+		btnPg1Next = new JButton("Next >>");
 		btnPg1Next.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				LOGGER.info("Selected Page 1 Next button");
@@ -126,11 +147,19 @@ public class DataSetupDialog extends JDialog {
 
         // Process the selected file (if any)
         if (selectedFile != null) {
-            label.setText(selectedFile.getName());
+            label.setText("  " + selectedFile.getName());
+            dataFileCreator.setAssistantDataFile(selectedFile);
         }
 
         // Close the application window after file selection
         inputFrame.dispose();
+	}
+
+	private void selectDateRange() {
+		DateRangeSelector selector = new DateRangeSelector((JFrame) getParent(), "Select Schedule Date Range", true, dataFileCreator);
+		selector.setVisible(true);
+		LocalDate[] dateRange = dataFileCreator.getServiceRange();
+		lblSelectedDateRange.setText(dateRange[0].toString() + " -- " + dateRange[1].toString());
 	}
 
 }
