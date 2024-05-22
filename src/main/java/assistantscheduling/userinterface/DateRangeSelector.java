@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class DateRangeSelector extends JDialog {
 
@@ -38,7 +39,8 @@ public class DateRangeSelector extends JDialog {
 	 */
 	public DateRangeSelector(JFrame frame, String title, boolean modal, DataFileCreator dataFileCreator) {
 		super(frame, title, modal);
-		setBounds(100, 100, 450, 202);
+		setSize(450, 200);
+        setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -92,7 +94,7 @@ public class DateRangeSelector extends JDialog {
 		getRootPane().setDefaultButton(btnOK);
 		btnOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("MMMM.dd.yyyy");
+				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("[MMMM.dd.yyyy][MMMM.d.yyyy]", Locale.ENGLISH);
 				LocalDate startDate = LocalDate.parse((String)comboStartMonth.getSelectedItem()+"."
 							+((Integer)comboStartDay.getSelectedItem()).toString()+"."+((Integer)comboStartYear.getSelectedItem()).toString(), dtFormatter);
 				LocalDate endDate = LocalDate.parse((String)comboEndMonth.getSelectedItem()+"."
@@ -100,6 +102,7 @@ public class DateRangeSelector extends JDialog {
 				if(allSelected() && dateRangeOkay(startDate, endDate)) {
 					LocalDate[] dateRange = {startDate, endDate};
 					dataFileCreator.setServiceRange(dateRange);
+					dispose();
 				} else {
 		            JOptionPane.showMessageDialog(frame, "Error with date selection", "Date Range Selection Error", JOptionPane.ERROR_MESSAGE);
 				}
