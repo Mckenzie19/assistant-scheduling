@@ -156,6 +156,10 @@ public class DataSetupDialog extends JDialog {
 	}
 
 	private void selectDateRange() {
+		// Clear old date range
+		dataFileCreator.setServiceRange(null);
+		lblSelectedDateRange.setText("  ");
+		// Get new date range
 		DateRangeSelector selector = new DateRangeSelector((JFrame) getParent(), "Select Schedule Date Range", true, dataFileCreator);
 		selector.setVisible(true);
 		LocalDate[] dateRange = dataFileCreator.getServiceRange();
