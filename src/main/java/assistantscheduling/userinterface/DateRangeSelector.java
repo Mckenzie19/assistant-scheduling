@@ -88,6 +88,15 @@ public class DateRangeSelector extends JDialog {
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		btnCancel.setActionCommand("Cancel");
+		buttonPane.add(btnCancel);
+		
 		JButton btnOK = new JButton("OK");
 		btnOK.setActionCommand("OK");
 		buttonPane.add(btnOK);
@@ -108,15 +117,6 @@ public class DateRangeSelector extends JDialog {
 				}
 			}
 		});
-	
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-		btnCancel.setActionCommand("Cancel");
-		buttonPane.add(btnCancel);
 	}
 	
 	private boolean allSelected() {

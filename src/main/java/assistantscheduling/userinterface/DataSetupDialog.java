@@ -2,23 +2,23 @@ package assistantscheduling.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
+//import java.awt.Component;
 import java.awt.Font;
-import java.awt.Point;
+//import java.awt.Point;
 import java.awt.event.*;
 import java.io.File;
 import java.time.LocalDate;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+//import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.RootPaneContainer;
-import javax.swing.SwingUtilities;
+//import javax.swing.RootPaneContainer;
+//import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -34,7 +34,7 @@ public class DataSetupDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupDialog.class);
 	private static DataIO dataHandler;
-	private Component glassPane;
+	//private Component glassPane;
 	
 	// Declare dialog components
 	JLabel lblAssistantData;
@@ -214,7 +214,7 @@ public class DataSetupDialog extends JDialog {
 		btnPg1Next = new JButton("Next >>");
 		btnPg1Next.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				LOGGER.info("Selected Page 1 Next button");
+				
 			}
 		});
 		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
