@@ -2,18 +2,23 @@ package assistantscheduling.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Point;
+import java.awt.event.*;
 import java.io.File;
 import java.time.LocalDate;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.RootPaneContainer;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -29,6 +34,7 @@ public class DataSetupDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupDialog.class);
 	private static DataIO dataHandler;
+	private Component glassPane;
 	
 	// Declare dialog components
 	JLabel lblAssistantData;
@@ -38,7 +44,8 @@ public class DataSetupDialog extends JDialog {
 	JLabel lblSelectedDateRange;
 	JButton btnSelectDateRange;
 	JCheckBox chckbxSelectAdditionalServices;
-	JLabel lblAdditionalServices;
+	JTextField txtAdditionalServices;
+	TextPrompt tpAddServices;
 	JButton btnCancel;
 	JButton btnPg1Next;
 	
@@ -47,6 +54,7 @@ public class DataSetupDialog extends JDialog {
 	 */
 	public DataSetupDialog(JFrame frame, String title, boolean modal, DataIO dataHandler) {
 		super(frame, title, modal);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		DataSetupDialog.dataHandler = dataHandler;
 		setSize(600, 220);
         setLocationRelativeTo(null);
@@ -58,14 +66,70 @@ public class DataSetupDialog extends JDialog {
 				"5[right shrink]5[grow]5[shrink]5", // Column constraints
 				"15[shrink][shrink][shrink]push[]5")); // Row constraints
 		
-		// Add components to dialog
+//		getGlassPane().setFocusable(true);
+//		getGlassPane().addMouseListener(new MouseListener() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				LOGGER.info("Registered mouse click event.");
+//				Point glassPoint = e.getPoint();
+//				Point contentPoint = SwingUtilities.convertPoint(getGlassPane(), glassPoint, getContentPane());
+//				if (contentPoint.y >=0 ) {
+//					LOGGER.info("Mouse click occured within bounds of content panel.");
+//					// Get the deepest component of the container
+//					Component c = SwingUtilities.getDeepestComponentAt(getContentPane(), contentPoint.x, contentPoint.y);
+//					// If null or instance of a JPanel, means there is no component and we are clicking in empty space
+//					if (c == null || c instanceof JPanel) {
+//						LOGGER.info("No components at mouse click. GlassPane requesting focus.");
+//						getGlassPane().requestFocusInWindow();
+//					} else {
+//						LOGGER.info("Component found. Dispatching event and shifting focus.");
+//						c.requestFocusInWindow();
+//						c.dispatchEvent(new MouseEvent(c,
+//                                e.getID(),
+//                                e.getWhen(),
+//                                e.getModifiersEx(),
+//                                contentPoint.x,
+//                                contentPoint.y,
+//                                e.getClickCount(),
+//                                e.isPopupTrigger()));
+//					}
+//				}
+//			}
+//
+//			@Override
+//			public void mousePressed(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void mouseReleased(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void mouseEntered(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void mouseExited(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		getGlassPane().setVisible(true);
+//		
 		
+		// Add components to dialog
 		// First Row
 		lblAssistantData = new JLabel("Assistant Data File");
 		lblAssistantData.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(lblAssistantData, "shrinkx");
 		
-		lblAssisDataFileName = new JLabel("     ");
+		lblAssisDataFileName = new JLabel(" ");
 		lblAssisDataFileName.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblAssisDataFileName.setBackground(Color.WHITE);
 		lblAssisDataFileName.setOpaque(true);
@@ -86,7 +150,7 @@ public class DataSetupDialog extends JDialog {
 		lblServiceDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(lblServiceDateRange, "shrinkx");
 
-		lblSelectedDateRange = new JLabel("     ");
+		lblSelectedDateRange = new JLabel(" ");
 		lblSelectedDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblSelectedDateRange.setBackground(Color.WHITE);
 		lblSelectedDateRange.setOpaque(true);
@@ -104,14 +168,37 @@ public class DataSetupDialog extends JDialog {
 		
 		// Third Row
 		chckbxSelectAdditionalServices = new JCheckBox("Select Additional Service Dates");
+		chckbxSelectAdditionalServices.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					// Add Dates
+					chckbxSelectAdditionalServices.setForeground(Color.BLACK);
+					tpAddServices.setForeground(Color.GRAY);
+					txtAdditionalServices.setEditable(true);
+				} else {
+					// Clear selection
+					chckbxSelectAdditionalServices.setForeground(Color.GRAY);
+					txtAdditionalServices.setText("");
+					tpAddServices.setForeground(Color.LIGHT_GRAY);
+					txtAdditionalServices.setEditable(false);
+					dataFileCreator.setAdditionalServices(null);
+				}
+			}
+		});
+		chckbxSelectAdditionalServices.setForeground(Color.GRAY);
 		chckbxSelectAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		contentPanel.add(chckbxSelectAdditionalServices, "shrinkx");
 		
-		lblAdditionalServices = new JLabel("     ");
-		lblAdditionalServices.setBackground(Color.WHITE);
-		lblAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
-		lblAdditionalServices.setOpaque(true);
-		contentPanel.add(lblAdditionalServices, "span 2,growx");
+		txtAdditionalServices = new JTextField("");
+		txtAdditionalServices.setBackground(Color.WHITE);
+		txtAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		txtAdditionalServices.setOpaque(true);
+		txtAdditionalServices.setForeground(Color.BLACK);
+		txtAdditionalServices.setEditable(false);
+		contentPanel.add(txtAdditionalServices, "span 2,growx, hidemode 3");
+		// Adds a text prompt that overlays the above text field. Will only show up when the window focus is not on the text field.
+		tpAddServices = new TextPrompt("MM/DD/YYYY, MM/DD/YYYY, etc.", txtAdditionalServices, TextPrompt.Show.FOCUS_LOST);
+		tpAddServices.setForeground(Color.LIGHT_GRAY);
 
 		
 		// Fourth Row
@@ -163,7 +250,8 @@ public class DataSetupDialog extends JDialog {
 		DateRangeSelector selector = new DateRangeSelector((JFrame) getParent(), "Select Schedule Date Range", true, dataFileCreator);
 		selector.setVisible(true);
 		LocalDate[] dateRange = dataFileCreator.getServiceRange();
-		if (dateRange != null) lblSelectedDateRange.setText(dateRange[0].toString() + " -- " + dateRange[1].toString());
+		if (dateRange != null) lblSelectedDateRange.setText(dateRange[0].toString() + "  :  " + dateRange[1].toString());
 	}
 
 }
+
