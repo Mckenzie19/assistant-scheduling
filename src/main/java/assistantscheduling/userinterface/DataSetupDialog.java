@@ -2,23 +2,19 @@ package assistantscheduling.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-//import java.awt.Component;
+import java.awt.Component;
 import java.awt.Font;
-//import java.awt.Point;
 import java.awt.event.*;
 import java.io.File;
 import java.time.LocalDate;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-//import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-//import javax.swing.RootPaneContainer;
-//import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -34,7 +30,6 @@ public class DataSetupDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupDialog.class);
 	private static DataIO dataHandler;
-	//private Component glassPane;
 	
 	// Declare dialog components
 	JLabel lblAssistantData;
@@ -65,63 +60,6 @@ public class DataSetupDialog extends JDialog {
 				"wrap 3",     // Layout constraints
 				"5[right shrink]5[grow]5[shrink]5", // Column constraints
 				"15[shrink][shrink][shrink]push[]5")); // Row constraints
-		
-//		getGlassPane().setFocusable(true);
-//		getGlassPane().addMouseListener(new MouseListener() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				LOGGER.info("Registered mouse click event.");
-//				Point glassPoint = e.getPoint();
-//				Point contentPoint = SwingUtilities.convertPoint(getGlassPane(), glassPoint, getContentPane());
-//				if (contentPoint.y >=0 ) {
-//					LOGGER.info("Mouse click occured within bounds of content panel.");
-//					// Get the deepest component of the container
-//					Component c = SwingUtilities.getDeepestComponentAt(getContentPane(), contentPoint.x, contentPoint.y);
-//					// If null or instance of a JPanel, means there is no component and we are clicking in empty space
-//					if (c == null || c instanceof JPanel) {
-//						LOGGER.info("No components at mouse click. GlassPane requesting focus.");
-//						getGlassPane().requestFocusInWindow();
-//					} else {
-//						LOGGER.info("Component found. Dispatching event and shifting focus.");
-//						c.requestFocusInWindow();
-//						c.dispatchEvent(new MouseEvent(c,
-//                                e.getID(),
-//                                e.getWhen(),
-//                                e.getModifiersEx(),
-//                                contentPoint.x,
-//                                contentPoint.y,
-//                                e.getClickCount(),
-//                                e.isPopupTrigger()));
-//					}
-//				}
-//			}
-//
-//			@Override
-//			public void mousePressed(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void mouseReleased(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void mouseEntered(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void mouseExited(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
-//		getGlassPane().setVisible(true);
-//		
 		
 		// Add components to dialog
 		// First Row
@@ -220,6 +158,9 @@ public class DataSetupDialog extends JDialog {
 		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
 		contentPanel.add(btnPg1Next, "skip 1,right,tag next");
 		
+		contentPanel.setFocusable(true);
+		contentPanel.addMouseListener(new MyMouseListener());
+		
 	}
 	
 	private void pickAssistantFile(JLabel label) {
@@ -253,5 +194,20 @@ public class DataSetupDialog extends JDialog {
 		if (dateRange != null) lblSelectedDateRange.setText(dateRange[0].toString() + "  :  " + dateRange[1].toString());
 	}
 
+	class MyMouseListener extends MouseAdapter{
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// Check if user left clicked
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				// Check if there are no components were the user clicked, aka if the returned component is the JPanel
+				Component c = contentPanel.getComponentAt(e.getPoint());
+				if (c instanceof JPanel) {
+					LOGGER.info("Content Panel requesting focus in window...");
+					contentPanel.requestFocusInWindow();
+				}
+			}
+		}
+	}
+	
 }
 
