@@ -7,6 +7,9 @@ import java.awt.Font;
 import java.awt.event.*;
 import java.io.File;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -17,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +45,7 @@ public class DataSetupDialog extends JDialog {
 	JCheckBox chckbxSelectAdditionalServices;
 	JTextField txtAdditionalServices;
 	TextPrompt tpAddServices;
+	JLabel warningLabel;
 	JButton btnCancel;
 	JButton btnPg1Next;
 	
@@ -59,7 +64,7 @@ public class DataSetupDialog extends JDialog {
 		contentPanel.setLayout(new MigLayout(
 				"wrap 3",     // Layout constraints
 				"5[right shrink]5[grow]5[shrink]5", // Column constraints
-				"15[shrink][shrink][shrink]push[]5")); // Row constraints
+				"15[shrink][shrink][shrink][shrink]push[]5")); // Row constraints
 		
 		// Add components to dialog
 		// First Row
@@ -117,8 +122,10 @@ public class DataSetupDialog extends JDialog {
 					// Clear selection
 					chckbxSelectAdditionalServices.setForeground(Color.GRAY);
 					txtAdditionalServices.setText("");
+					txtAdditionalServices.setBorder(null);
 					tpAddServices.setForeground(Color.LIGHT_GRAY);
 					txtAdditionalServices.setEditable(false);
+					warningLabel.setVisible(false);
 					dataFileCreator.setAdditionalServices(null);
 				}
 			}
@@ -133,13 +140,59 @@ public class DataSetupDialog extends JDialog {
 		txtAdditionalServices.setOpaque(true);
 		txtAdditionalServices.setForeground(Color.BLACK);
 		txtAdditionalServices.setEditable(false);
-		contentPanel.add(txtAdditionalServices, "span 2,growx, hidemode 3");
+		txtAdditionalServices.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				txtAdditionalServices.setBorder(null);
+				warningLabel.setVisible(false);
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				// Check if the dates input into the text field match the required formatting
+				String fieldText = txtAdditionalServices.getText();
+				if (fieldText.length() == 0) return;
+				try {
+					String[] splitText = fieldText.split(", ", 0);
+					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("[MM/dd/yyyy][MM/d/yyyy][M/dd/yyyy][M/d/yyyy]", Locale.ENGLISH);
+					LocalDate[] dates = new LocalDate[splitText.length];
+					for (int i = 0; i < splitText.length; i++) {
+						dates[i] = LocalDate.parse(splitText[i], dtf);
+						// If date is before today's date, then it is not a valid input
+						if (dates[i].isBefore(LocalDate.now())) {
+							LOGGER.warn("Attempted to add past date.");
+							warningLabel.setText("All dates entered must be future dates");
+							txtAdditionalServices.setBorder(new LineBorder(Color.RED));
+							warningLabel.setVisible(true);
+							dataFileCreator.setAdditionalServices(null);
+							return;
+						}
+					}
+					dataFileCreator.setAdditionalServices(dates);
+				} catch (DateTimeParseException de) {
+					LOGGER.warn("Improper date formatting entered: \n" + de.getMessage());
+					warningLabel.setText("Please ensure dates follow requested formatting");
+					txtAdditionalServices.setBorder(new LineBorder(Color.RED));
+					warningLabel.setVisible(true);
+					dataFileCreator.setAdditionalServices(null);
+					return;
+				}
+			}
+		});
+		contentPanel.add(txtAdditionalServices, "span 2,growx");
 		// Adds a text prompt that overlays the above text field. Will only show up when the window focus is not on the text field.
 		tpAddServices = new TextPrompt("MM/DD/YYYY, MM/DD/YYYY, etc.", txtAdditionalServices, TextPrompt.Show.FOCUS_LOST);
 		tpAddServices.setForeground(Color.LIGHT_GRAY);
-
 		
 		// Fourth Row
+		warningLabel = new JLabel("Please ensure dates follow requested formatting");
+		warningLabel.setFont(new Font("Proxima Nova", Font.ITALIC, 12));
+		warningLabel.setForeground(Color.RED);
+		warningLabel.setVisible(false);
+		contentPanel.add(warningLabel, "span2,shrinkx,wrap");
+
+		
+		// Fifth Row
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

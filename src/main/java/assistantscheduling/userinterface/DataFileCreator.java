@@ -2,13 +2,18 @@ package assistantscheduling.userinterface;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataFileCreator {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataFileCreator.class);
+	
 	private File assistantDataFile;
 	private LocalDate[] serviceRange;
-	private ArrayList<LocalDate> additionalServices;
+	private LocalDate[] additionalServices;
 	private File outputFile;
 	
 	public DataFileCreator() {}
@@ -19,6 +24,7 @@ public class DataFileCreator {
 
 	public void setAssistantDataFile(File assistantDataFile) {
 		this.assistantDataFile = assistantDataFile;
+		LOGGER.info("Set assistant data import file: " + assistantDataFile.getName());
 	}
 
 	public LocalDate[] getServiceRange() {
@@ -27,14 +33,16 @@ public class DataFileCreator {
 
 	public void setServiceRange(LocalDate[] serviceRange) {
 		this.serviceRange = serviceRange;
+		LOGGER.info("Set service date range: " + Arrays.toString(serviceRange));
 	}
 
-	public ArrayList<LocalDate> getAdditionalServices() {
+	public LocalDate[] getAdditionalServices() {
 		return additionalServices;
 	}
 
-	public void setAdditionalServices(ArrayList<LocalDate> additionalServices) {
+	public void setAdditionalServices(LocalDate[] additionalServices) {
 		this.additionalServices = additionalServices;
+		LOGGER.info("Set additional service dates: " + Arrays.toString(additionalServices));
 	}
 
 	public File getOutputFile() {
@@ -43,6 +51,7 @@ public class DataFileCreator {
 
 	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
+		LOGGER.info("Set data output file: " + outputFile.getName());
 	}
 	
 }
