@@ -149,34 +149,12 @@ public class DataSetupDialog extends JDialog {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				// Check if the dates input into the text field match the required formatting
-				String fieldText = txtAdditionalServices.getText();
-				if (fieldText.length() == 0) return;
-				try {
-					String[] splitText = fieldText.split(", ", 0);
-					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("[MM/dd/yyyy][MM/d/yyyy][M/dd/yyyy][M/d/yyyy]", Locale.ENGLISH);
-					LocalDate[] dates = new LocalDate[splitText.length];
-					for (int i = 0; i < splitText.length; i++) {
-						dates[i] = LocalDate.parse(splitText[i], dtf);
-						// If date is before today's date, then it is not a valid input
-						if (dates[i].isBefore(LocalDate.now())) {
-							LOGGER.warn("Attempted to add past date.");
-							warningLabel.setText("All dates entered must be future dates");
-							txtAdditionalServices.setBorder(new LineBorder(Color.RED));
-							warningLabel.setVisible(true);
-							dataFileCreator.setAdditionalServices(null);
-							return;
-						}
-					}
-					dataFileCreator.setAdditionalServices(dates);
-				} catch (DateTimeParseException de) {
-					LOGGER.warn("Improper date formatting entered: \n" + de.getMessage());
-					warningLabel.setText("Please ensure dates follow requested formatting");
-					txtAdditionalServices.setBorder(new LineBorder(Color.RED));
-					warningLabel.setVisible(true);
-					dataFileCreator.setAdditionalServices(null);
-					return;
-				}
+				checkAdditionalDateFormatting();
+			}
+		});
+		txtAdditionalServices.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				checkAdditionalDateFormatting();
 			}
 		});
 		contentPanel.add(txtAdditionalServices, "span 2,growx");
@@ -259,6 +237,38 @@ public class DataSetupDialog extends JDialog {
 					contentPanel.requestFocusInWindow();
 				}
 			}
+		}
+	}
+	
+	public void checkAdditionalDateFormatting() {
+		String fieldText = txtAdditionalServices.getText();
+		if (fieldText.length() == 0) return;
+		try {
+			String[] splitText = fieldText.split(", ", 0);
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("[MM/dd/yyyy][MM/d/yyyy][M/dd/yyyy][M/d/yyyy]", Locale.ENGLISH);
+			LocalDate[] dates = new LocalDate[splitText.length];
+			for (int i = 0; i < splitText.length; i++) {
+				dates[i] = LocalDate.parse(splitText[i], dtf);
+				// If date is before today's date, then it is not a valid input
+				if (dates[i].isBefore(LocalDate.now())) {
+					LOGGER.warn("Attempted to add past date.");
+					warningLabel.setText("All dates entered must be future dates");
+					txtAdditionalServices.setBorder(new LineBorder(Color.RED));
+					warningLabel.setVisible(true);
+					dataFileCreator.setAdditionalServices(null);
+					return;
+				}
+			}
+			dataFileCreator.setAdditionalServices(dates);
+			txtAdditionalServices.setBorder(null);
+			warningLabel.setVisible(false);
+		} catch (DateTimeParseException de) {
+			LOGGER.warn("Improper date formatting entered: \n" + de.getMessage());
+			warningLabel.setText("Please ensure dates follow requested formatting");
+			txtAdditionalServices.setBorder(new LineBorder(Color.RED));
+			warningLabel.setVisible(true);
+			dataFileCreator.setAdditionalServices(null);
+			return;
 		}
 	}
 	
