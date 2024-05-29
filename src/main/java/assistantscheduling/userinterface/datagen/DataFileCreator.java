@@ -1,4 +1,4 @@
-package assistantscheduling.userinterface;
+package assistantscheduling.userinterface.datagen;
 
 import java.io.File;
 import java.time.LocalDate;

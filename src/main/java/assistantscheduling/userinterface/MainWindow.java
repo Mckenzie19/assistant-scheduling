@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 // import com.sun.tools.javac.launcher.Main;
 
 import assistantscheduling.domain.AssistantSchedule;
+import assistantscheduling.userinterface.datagen.DataSetupDialog;
 
 public class MainWindow{
 

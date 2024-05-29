@@ -1,10 +1,18 @@
-package assistantscheduling.userinterface;
+package assistantscheduling.userinterface.datagen;
 
-import java.awt.BorderLayout;
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
@@ -25,43 +34,40 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import assistantscheduling.userinterface.DataIO;
+import assistantscheduling.userinterface.TextPrompt;
 import net.miginfocom.swing.MigLayout;
 
-public class DataSetupDialog extends JDialog {
-
-	private final JPanel contentPanel = new JPanel();
-	private DataFileCreator dataFileCreator = new DataFileCreator();
+class DataSetupPanel1 extends JPanel {
+	
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupDialog.class);
-	private static DataIO dataHandler;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetupPanel1.class);
+	
+	private DataIO dataHandler;
+	private DataFileCreator dataFileCreator;
+	private DataSetupDialog parent;
 	
 	// Declare dialog components
-	JLabel lblAssistantData;
-	JLabel lblAssisDataFileName;
-	JButton btnSelectFile;
-	JLabel lblServiceDateRange;
-	JLabel lblSelectedDateRange;
-	JButton btnSelectDateRange;
-	JCheckBox chckbxSelectAdditionalServices;
-	JTextField txtAdditionalServices;
-	TextPrompt tpAddServices;
-	JLabel warningLabel;
-	JButton btnCancel;
-	JButton btnPg1Next;
+	private JLabel lblAssistantData;
+	private JLabel lblAssisDataFileName;
+	private JButton btnSelectFile;
+	private JLabel lblServiceDateRange;
+	private JLabel lblSelectedDateRange;
+	private JButton btnSelectDateRange;
+	private JCheckBox chckbxSelectAdditionalServices;
+	private JTextField txtAdditionalServices;
+	private TextPrompt tpAddServices;
+	private JLabel warningLabel;
+	private JButton btnCancel;
+	private JButton btnPg1Next;
 	
-	/**
-	 * Create the dialog.
-	 */
-	public DataSetupDialog(JFrame frame, String title, boolean modal, DataIO dataHandler) {
-		super(frame, title, modal);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		DataSetupDialog.dataHandler = dataHandler;
-		setSize(600, 220);
-        setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout(
+	public DataSetupPanel1(DataIO dataHandler, DataFileCreator dataFileCreator, DataSetupDialog parent) {
+		this.dataHandler = dataHandler;
+		this.dataFileCreator = dataFileCreator;
+		this.parent = parent;
+		setBorder(new EmptyBorder(5, 5, 5, 5));
+		setLayout(new MigLayout(
 				"wrap 3",     // Layout constraints
 				"5[right shrink]5[grow]5[shrink]5", // Column constraints
 				"15[shrink][shrink][shrink][shrink]push[]5")); // Row constraints
@@ -70,13 +76,13 @@ public class DataSetupDialog extends JDialog {
 		// First Row
 		lblAssistantData = new JLabel("Assistant Data File");
 		lblAssistantData.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		contentPanel.add(lblAssistantData, "shrinkx");
+		add(lblAssistantData, "shrinkx");
 		
 		lblAssisDataFileName = new JLabel(" ");
 		lblAssisDataFileName.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblAssisDataFileName.setBackground(Color.WHITE);
 		lblAssisDataFileName.setOpaque(true);
-		contentPanel.add(lblAssisDataFileName, "growx");
+		add(lblAssisDataFileName, "growx");
 		
 		btnSelectFile = new JButton("Select File");
 		btnSelectFile.addActionListener(new ActionListener() {
@@ -85,19 +91,19 @@ public class DataSetupDialog extends JDialog {
 			}
 		});
 		btnSelectFile.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
-		contentPanel.add(btnSelectFile, "shrinkx");
+		add(btnSelectFile, "shrinkx");
 
 		
 		// Second Row
 		lblServiceDateRange = new JLabel("Service Date Range");
 		lblServiceDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		contentPanel.add(lblServiceDateRange, "shrinkx");
+		add(lblServiceDateRange, "shrinkx");
 
 		lblSelectedDateRange = new JLabel(" ");
 		lblSelectedDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		lblSelectedDateRange.setBackground(Color.WHITE);
 		lblSelectedDateRange.setOpaque(true);
-		contentPanel.add(lblSelectedDateRange, "growx");
+		add(lblSelectedDateRange, "growx");
 		
 		btnSelectDateRange = new JButton("Select Date Range");
 		btnSelectDateRange.setFont(new Font("Proxima Nova", Font.PLAIN, 12));
@@ -106,7 +112,7 @@ public class DataSetupDialog extends JDialog {
 				selectDateRange();
 			}
 		});
-		contentPanel.add(btnSelectDateRange, "shrinkx");
+		add(btnSelectDateRange, "shrinkx");
 		
 		
 		// Third Row
@@ -132,7 +138,7 @@ public class DataSetupDialog extends JDialog {
 		});
 		chckbxSelectAdditionalServices.setForeground(Color.GRAY);
 		chckbxSelectAdditionalServices.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
-		contentPanel.add(chckbxSelectAdditionalServices, "shrinkx");
+		add(chckbxSelectAdditionalServices, "shrinkx");
 		
 		txtAdditionalServices = new JTextField("");
 		txtAdditionalServices.setBackground(Color.WHITE);
@@ -155,9 +161,12 @@ public class DataSetupDialog extends JDialog {
 		txtAdditionalServices.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				checkAdditionalDateFormatting();
+				// Loose the focus
+				LOGGER.info("Content Panel requesting focus in window...");
+				requestFocusInWindow();
 			}
 		});
-		contentPanel.add(txtAdditionalServices, "span 2,growx");
+		add(txtAdditionalServices, "span 2,growx");
 		// Adds a text prompt that overlays the above text field. Will only show up when the window focus is not on the text field.
 		tpAddServices = new TextPrompt("MM/DD/YYYY, MM/DD/YYYY, etc.", txtAdditionalServices, TextPrompt.Show.FOCUS_LOST);
 		tpAddServices.setForeground(Color.LIGHT_GRAY);
@@ -167,31 +176,34 @@ public class DataSetupDialog extends JDialog {
 		warningLabel.setFont(new Font("Proxima Nova", Font.ITALIC, 12));
 		warningLabel.setForeground(Color.RED);
 		warningLabel.setVisible(false);
-		contentPanel.add(warningLabel, "span2,shrinkx,wrap");
+		add(warningLabel, "span2,shrinkx,wrap");
 
 		
 		// Fifth Row
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				parent.dispose();
 			}
 		});
 		btnCancel.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		contentPanel.add(btnCancel, "tag cancel,alignx left");
+		add(btnCancel, "tag cancel,alignx left");
 		
 		btnPg1Next = new JButton("Next >>");
 		btnPg1Next.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				if (allDataEntered()) {
+					parent.goToNextPanel();
+				} else {
+					JOptionPane.showMessageDialog(parent, "Please ensure all required data is provided.", "Data Input Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		contentPanel.add(btnPg1Next, "skip 1,right,tag next");
+		add(btnPg1Next, "skip 1,right,tag next");
 		
-		contentPanel.setFocusable(true);
-		contentPanel.addMouseListener(new MyMouseListener());
-		
+		setFocusable(true);
+		addMouseListener(new MyMouseListener());
 	}
 	
 	private void pickAssistantFile(JLabel label) {
@@ -219,7 +231,7 @@ public class DataSetupDialog extends JDialog {
 		dataFileCreator.setServiceRange(null);
 		lblSelectedDateRange.setText("  ");
 		// Get new date range
-		DateRangeSelector selector = new DateRangeSelector((JFrame) getParent(), "Select Schedule Date Range", true, dataFileCreator);
+		DateRangeSelector selector = new DateRangeSelector((JFrame) parent.getParent(), "Select Schedule Date Range", true, dataFileCreator);
 		selector.setVisible(true);
 		LocalDate[] dateRange = dataFileCreator.getServiceRange();
 		if (dateRange != null) lblSelectedDateRange.setText(dateRange[0].toString() + "  :  " + dateRange[1].toString());
@@ -231,10 +243,10 @@ public class DataSetupDialog extends JDialog {
 			// Check if user left clicked
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				// Check if there are no components were the user clicked, aka if the returned component is the JPanel
-				Component c = contentPanel.getComponentAt(e.getPoint());
+				Component c = getComponentAt(e.getPoint());
 				if (c instanceof JPanel) {
 					LOGGER.info("Content Panel requesting focus in window...");
-					contentPanel.requestFocusInWindow();
+					requestFocusInWindow();
 				}
 			}
 		}
@@ -272,5 +284,15 @@ public class DataSetupDialog extends JDialog {
 		}
 	}
 	
+	private boolean allDataEntered() {
+		if (chckbxSelectAdditionalServices.isSelected()) {
+			return (dataFileCreator.getAssistantDataFile() != null) && 
+					(dataFileCreator.getServiceRange() != null) && 
+					(dataFileCreator.getAdditionalServices() != null);
+		} else {
+			return (dataFileCreator.getAssistantDataFile() != null) && 
+					(dataFileCreator.getServiceRange() != null);
+		}
+	}
+	
 }
-
