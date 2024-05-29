@@ -8,6 +8,10 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -18,12 +22,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DateRangeSelector extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateRangeSelector.class);
+
 	
 	// Declare dialog components
 	JComboBox<String> comboStartMonth;
@@ -46,25 +55,30 @@ public class DateRangeSelector extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[grow][grow][grow]", "[][][][]"));
 		String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-		Integer[] days = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-		// TODO: Don't hard code this. Get the current year, then a range of 20 years or so.
-		Integer[] years = {2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040};
+		Integer[] days = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30, 31};
+		LocalDate today = LocalDate.now();
+		int thisYear = today.getYear();
+		int thisMonth = today.getMonthValue();
+		Integer[] years = IntStream.rangeClosed(thisYear, thisYear+5).boxed().toArray(Integer[]::new);
 		
+		// Add gui components
 		JLabel lblStartDate = new JLabel("Select Schedule Start Date");
 		lblStartDate.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
 		contentPanel.add(lblStartDate, "span 2,wrap");
 	
 		comboStartMonth = new JComboBox<>(months);
 		comboStartMonth.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		comboStartMonth.setSelectedItem(months[thisMonth-1]);
 		contentPanel.add(comboStartMonth, "growx");
 	
 		comboStartDay = new JComboBox<>(days);
 		comboStartDay.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		comboStartDay.setSelectedItem(today.getDayOfMonth());
 		contentPanel.add(comboStartDay, "growx");
 	
 		comboStartYear = new JComboBox<>(years);
 		comboStartYear.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
-		comboStartYear.setSelectedIndex(0);
+		comboStartYear.setSelectedItem(thisYear);
 		contentPanel.add(comboStartYear, "growx,wrap");
 	
 		JLabel lblEndDate = new JLabel("Select Schedule End Date");
@@ -73,15 +87,17 @@ public class DateRangeSelector extends JDialog {
 	
 		comboEndMonth = new JComboBox<>(months);
 		comboEndMonth.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		comboEndMonth.setSelectedItem(months[thisMonth-1]);
 		contentPanel.add(comboEndMonth, "growx");
 	
 		comboEndDay = new JComboBox<>(days);
 		comboEndDay.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
+		comboEndDay.setSelectedItem(today.getDayOfMonth());
 		contentPanel.add(comboEndDay, "growx");
 	
 		comboEndYear = new JComboBox<>(years);
 		comboEndYear.setFont(new Font("Proxima Nova", Font.PLAIN, 13));
-		comboEndYear.setSelectedIndex(0);
+		comboEndYear.setSelectedItem(thisYear);
 		contentPanel.add(comboEndYear, "growx");
 	
 		JPanel buttonPane = new JPanel();
@@ -108,12 +124,16 @@ public class DateRangeSelector extends JDialog {
 							+((Integer)comboStartDay.getSelectedItem()).toString()+"."+((Integer)comboStartYear.getSelectedItem()).toString(), dtFormatter);
 				LocalDate endDate = LocalDate.parse((String)comboEndMonth.getSelectedItem()+"."
 						+((Integer)comboEndDay.getSelectedItem()).toString()+"."+((Integer)comboEndYear.getSelectedItem()).toString(), dtFormatter);
-				if(allSelected() && dateRangeOkay(startDate, endDate)) {
+				if(allSelected() && dateRangeOkay(startDate, endDate) && dateNotInPast(startDate)) {
 					LocalDate[] dateRange = {startDate, endDate};
 					dataFileCreator.setServiceRange(dateRange);
 					dispose();
+				} else if (!dateRangeOkay(startDate, endDate)) {
+		            JOptionPane.showMessageDialog(frame, "End date of schedule must occur after the start date.", "Date Range Selection Error", JOptionPane.ERROR_MESSAGE);
+				} else if (!dateNotInPast(startDate)){
+		            JOptionPane.showMessageDialog(frame, "Start date must not be in the past.", "Date Range Selection Error", JOptionPane.ERROR_MESSAGE);
 				} else {
-		            JOptionPane.showMessageDialog(frame, "Error with date selection", "Date Range Selection Error", JOptionPane.ERROR_MESSAGE);
+		            JOptionPane.showMessageDialog(frame, "Please ensure all fields have a selection.", "Date Range Selection Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -126,6 +146,10 @@ public class DateRangeSelector extends JDialog {
 	
 	private boolean dateRangeOkay(LocalDate startDate, LocalDate endDate) {
 		return startDate.isBefore(endDate);
+	}
+	
+	private boolean dateNotInPast(LocalDate date) {
+		return date.isAfter(LocalDate.now()) || date.isEqual(LocalDate.now());
 	}
 
 }
