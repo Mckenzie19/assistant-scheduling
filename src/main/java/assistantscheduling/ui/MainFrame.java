@@ -224,11 +224,10 @@ public class MainFrame extends JFrame {
 	 */
 	private void loadNextPage() {
 		FormPanel currPanel = (FormPanel) formPanel.getComponent(panelNum-1);
-		LOGGER.info(currPanel.getName());
 		try {
 			currPanel.checkData();
 		} catch (Exception e) {
-			LOGGER.warn("Data improperly entered.");
+			LOGGER.warn(e.getMessage());
 			return;
 		}
 		currPanel.saveData();
@@ -242,7 +241,6 @@ public class MainFrame extends JFrame {
 	 */
 	private void loadPreviousPage() {
 		FormPanel currPanel = (FormPanel) formPanel.getComponent(panelNum-1);
-		LOGGER.info(currPanel.getName());
 		currPanel.discardData();
 		formLayout.previous(formPanel);
 		buttonLayout.previous(buttonPanel);

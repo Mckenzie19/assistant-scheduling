@@ -1,4 +1,4 @@
-package assistantscheduling.userinterface;
+package assistantscheduling.ui;
 
 /**
  * Obtained from https://github.com/tips4java/tips4java/blob/main/source/TextPrompt.java

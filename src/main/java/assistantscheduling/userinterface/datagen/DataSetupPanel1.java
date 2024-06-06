@@ -34,7 +34,7 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import assistantscheduling.userinterface.TextPrompt;
+import assistantscheduling.ui.TextPrompt;
 import dataio.DataFileCreator;
 import dataio.DataIO;
 import net.miginfocom.swing.MigLayout;
