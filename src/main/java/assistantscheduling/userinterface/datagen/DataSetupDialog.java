@@ -33,9 +33,10 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import assistantscheduling.userinterface.DataIO;
 import assistantscheduling.userinterface.TextPrompt;
 import assistantscheduling.userinterface.TextPrompt.Show;
+import dataio.DataFileCreator;
+import dataio.DataIO;
 import net.miginfocom.swing.MigLayout;
 
 public class DataSetupDialog extends JDialog {

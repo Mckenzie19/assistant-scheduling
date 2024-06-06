@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.userinterface.datagen.DataSetupDialog;
+import dataio.DataIO;
 
 public class MainWindow{
 

@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dataio.DataFileCreator;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -55,7 +56,7 @@ public class DateRangeSelector extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[grow][grow][grow]", "[][][][]"));
 		String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-		Integer[] days = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30, 31};
+		Integer[] days = IntStream.rangeClosed(1, 31).boxed().toArray(Integer[]::new);
 		LocalDate today = LocalDate.now();
 		int thisYear = today.getYear();
 		int thisMonth = today.getMonthValue();

@@ -1,4 +1,4 @@
-package assistantscheduling.userinterface.datagen;
+package dataio;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -54,4 +54,10 @@ public class DataFileCreator {
 		LOGGER.info("Set data output file: " + outputFile.getName());
 	}
 	
+	public void discardAllData() {
+		assistantDataFile = null;
+		serviceRange = null;
+		additionalServices = null;
+		outputFile = null;
+	}
 }

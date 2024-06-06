@@ -2,7 +2,9 @@ package assistantscheduling;
 
 import java.awt.EventQueue;
 import java.time.Duration;
+import java.util.Arrays;
 
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import org.optaplanner.core.api.solver.Solver;
@@ -15,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.domain.ServiceAssignment;
 import assistantscheduling.solver.AssistantSchedulingConstraintProvider;
-import assistantscheduling.userinterface.MainWindow;
+import assistantscheduling.ui.MainFrame;
 
 public class AssistantSchedulingApp {
 
@@ -40,14 +42,14 @@ public class AssistantSchedulingApp {
 					try {
 	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	                } catch (Exception e) {
-	                    e.printStackTrace();
+	                    LOGGER.error(e.getMessage());
 	                }
 					
 					try {
-						MainWindow applicationWindow = new MainWindow(solver);
-						applicationWindow.getFrame().setVisible(true);
+						JFrame applicationFrame = new MainFrame();
+						applicationFrame.setVisible(true);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOGGER.error(Arrays.toString(e.getStackTrace()));
 					}
 				}
 			});

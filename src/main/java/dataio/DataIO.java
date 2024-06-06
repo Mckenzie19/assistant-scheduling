@@ -1,4 +1,4 @@
-package assistantscheduling.userinterface;
+package dataio;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +40,7 @@ import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.domain.Position;
 import assistantscheduling.domain.Service;
 import assistantscheduling.domain.ServiceAssignment;
+import assistantscheduling.userinterface.ServiceComparator;
 
 public class DataIO {
 
