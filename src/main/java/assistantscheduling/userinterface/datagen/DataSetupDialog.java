@@ -61,7 +61,7 @@ public class DataSetupDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		// Rather than creating a number of different dialogs, use the same dialog and use different panels
 		page1Panel = new DataSetupPanel1(dataHandler, dataFileCreator, this);
-		page2Panel = new DataSetupPanel2();
+
 		panels = new LinkedList<JPanel>(Arrays.asList(page1Panel, page2Panel));
 		getContentPane().add(panels.poll(), BorderLayout.CENTER);
 	}

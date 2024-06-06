@@ -232,8 +232,6 @@ class DataSetupPanel1 extends JPanel {
 		dataFileCreator.setServiceRange(null);
 		lblSelectedDateRange.setText("  ");
 		// Get new date range
-		DateRangeSelector selector = new DateRangeSelector((JFrame) parent.getParent(), "Select Schedule Date Range", true, dataFileCreator);
-		selector.setVisible(true);
 		LocalDate[] dateRange = dataFileCreator.getServiceRange();
 		if (dateRange != null) lblSelectedDateRange.setText(dateRange[0].toString() + "  :  " + dateRange[1].toString());
 	}

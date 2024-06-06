@@ -195,9 +195,11 @@ public class MainFrame extends JFrame {
 	 */
 	private void initializeFormPanels() {
 		FormPanel startFormPanel = new StartFormPanel();
-		FormPanel dateSelectionPanel = new DateSelectionPanel(dfc);
+		FormPanel dateFormPanel = new DateFormPanel(dfc);
+		FormPanel communionFormPanel = new CommunionFormPanel(dfc);
 		formPanel.add(startFormPanel);
-		formPanel.add(dateSelectionPanel);
+		formPanel.add(dateFormPanel);
+		formPanel.add(communionFormPanel);
 	}
 	
 	/**
@@ -206,17 +208,18 @@ public class MainFrame extends JFrame {
 	private void initializeButtonPanels() {
 		// Initialize button panels
 		StartButtonPanel startButtonPanel = new StartButtonPanel();
-		ButtonPanel dateSelectionButtonPanel = new DateSelectionButtonPanel();
+		ButtonPanel dateButtonPanel = new DateButtonPanel();
 		
 		// Add action listeners to buttons
 		startButtonPanel.startAddActionListener(e -> loadNextPage());
-		dateSelectionButtonPanel.nextAddActionListener(e -> loadNextPage());
-		dateSelectionButtonPanel.backAddActionListener(e -> loadPreviousPage());
-		dateSelectionButtonPanel.cancelAddActionListener(e -> cancel());
+		dateButtonPanel.nextAddActionListener(e -> loadNextPage());
+		dateButtonPanel.backAddActionListener(e -> loadPreviousPage());
+		dateButtonPanel.cancelAddActionListener(e -> cancel());
 		
 		// Add button panels to main button panel
 		buttonPanel.add(startButtonPanel);
-		buttonPanel.add((JPanel)dateSelectionButtonPanel);
+		buttonPanel.add((JPanel)dateButtonPanel);
+		buttonPanel.add((JPanel)dateButtonPanel); // TODO: Temp please fix
 	}
 	
 	/**
@@ -231,6 +234,8 @@ public class MainFrame extends JFrame {
 			return;
 		}
 		currPanel.saveData();
+		FormPanel nextPanel = (FormPanel) formPanel.getComponent(panelNum);
+		nextPanel.loadData();
 		formLayout.next(formPanel);
 		buttonLayout.next(buttonPanel);
 		panelNum++;

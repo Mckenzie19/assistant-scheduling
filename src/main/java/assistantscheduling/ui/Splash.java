@@ -1,4 +1,4 @@
-package assistantscheduling.userinterface;
+package assistantscheduling.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;

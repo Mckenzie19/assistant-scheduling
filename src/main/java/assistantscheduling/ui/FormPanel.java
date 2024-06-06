@@ -22,6 +22,8 @@ abstract class FormPanel extends JPanel {
 	
 	abstract public void checkData() throws Exception;
 	
+	abstract public void loadData();
+	
 	public void saveData() {
 		LOGGER.info("Saving form data...");
 		for (int i = 0; i < dataSetters.size(); i++) {

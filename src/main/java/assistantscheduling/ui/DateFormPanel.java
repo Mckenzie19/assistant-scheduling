@@ -25,10 +25,10 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DateSelectionPanel extends FormPanel {
+public class DateFormPanel extends FormPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(DateSelectionPanel.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateFormPanel.class);
 	
 	// This setup allows for the parent frame to instruct the panel to either save or discard all data, depending on the button selected
 	private static LocalDate[] serviceDateRange;
@@ -55,7 +55,7 @@ public class DateSelectionPanel extends FormPanel {
 	/**
 	 * Create the panel.
 	 */
-	public DateSelectionPanel(DataFileCreator dfc) {
+	public DateFormPanel(DataFileCreator dfc) {
 		setName("Date Selection Panel");
 		setLayout(new MigLayout("wrap 3", "5[][grow][grow]5", "10[]10[][][][][][][][][]5"));
 		setBackground(Color.WHITE);
@@ -270,6 +270,11 @@ public class DateSelectionPanel extends FormPanel {
 	private boolean dateRangeLogical(LocalDate startDate, LocalDate endDate) {
 		LOGGER.info("Checking if date range is logical...");
 		return startDate.isBefore(endDate) && (startDate.isAfter(LocalDate.now()) || startDate.isEqual(LocalDate.now()));
+	}
+
+	@Override
+	public void loadData() {
+		return;
 	}
 	
 }

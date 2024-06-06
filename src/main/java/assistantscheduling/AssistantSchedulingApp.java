@@ -43,13 +43,15 @@ public class AssistantSchedulingApp {
 	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	                } catch (Exception e) {
 	                    LOGGER.error(e.getMessage());
+	                    
 	                }
 					
 					try {
 						JFrame applicationFrame = new MainFrame();
 						applicationFrame.setVisible(true);
 					} catch (Exception e) {
-						LOGGER.error(Arrays.toString(e.getStackTrace()));
+						LOGGER.error("Mesage: "+ e.getMessage() +"\n"
+								+"Stack Trace: "+Arrays.toString(e.getStackTrace()));
 					}
 				}
 			});

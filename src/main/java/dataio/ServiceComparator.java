@@ -1,4 +1,4 @@
-package assistantscheduling.userinterface;
+package dataio;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

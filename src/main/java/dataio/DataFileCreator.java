@@ -14,6 +14,7 @@ public class DataFileCreator {
 	private File assistantDataFile;
 	private LocalDate[] serviceRange;
 	private LocalDate[] additionalServices;
+	private LocalDate[] communionDates;
 	private File outputFile;
 	
 	public DataFileCreator() {}
@@ -43,6 +44,14 @@ public class DataFileCreator {
 	public void setAdditionalServices(LocalDate[] additionalServices) {
 		this.additionalServices = additionalServices;
 		LOGGER.info("Set additional service dates: " + Arrays.toString(additionalServices));
+	}
+
+	public LocalDate[] getCommunionDates() {
+		return communionDates;
+	}
+	
+	public void setCommunionDates(LocalDate[] communionDates) {
+		this.communionDates = communionDates;
 	}
 
 	public File getOutputFile() {

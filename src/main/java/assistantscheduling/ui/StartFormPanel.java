@@ -52,4 +52,10 @@ public class StartFormPanel extends FormPanel {
 		return;
 	}
 
+
+	@Override
+	public void loadData() {
+		return;
+	}
+
 }

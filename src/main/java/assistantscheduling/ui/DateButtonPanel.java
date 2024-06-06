@@ -6,14 +6,14 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-public class DateSelectionButtonPanel extends JPanel implements ButtonPanel{
+public class DateButtonPanel extends JPanel implements ButtonPanel{
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the panel.
 	 */
-	public DateSelectionButtonPanel() {
+	public DateButtonPanel() {
 		setLayout(new MigLayout("wrap 3", "[]push[][]", "[]"));
 		setFocusable(true);
 		
