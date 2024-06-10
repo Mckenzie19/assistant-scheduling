@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -41,6 +42,7 @@ public class CommunionFormPanel extends FormPanel {
 	private JList<LocalDate> lstServices;
 	private JScrollPane scrollPane;
 	private DefaultListModel<LocalDate> dateModel = new DefaultListModel<LocalDate>();
+	private HashMap<LocalDate, Boolean> internalServiceList = new HashMap<LocalDate, Boolean>();
 
 
 	/**
@@ -63,7 +65,9 @@ public class CommunionFormPanel extends FormPanel {
 
 		// Initialize panel components
 		lblTitle = new JLabel("Select Communion Sundays");
-		dateModel.addElement(LocalDate.now()); // Temporary data allows for the creation of the list model. This gets cleared upon data loading.
+		// Temporary data allows for the creation of the list model. This gets cleared upon data loading.
+		dateModel.addElement(LocalDate.now()); 
+		internalServiceList.put(LocalDate.now(), false);
 		lstServices = new JList<LocalDate>(dateModel);
 		scrollPane = new JScrollPane(lstServices);
 
@@ -83,17 +87,15 @@ public class CommunionFormPanel extends FormPanel {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-
-			        if (lstServices.getSelectedIndex() == -1) {
-			        	// Selection cleared
-			        } else {
-			        	// Cell selected, flip the Communion tag (on/off)
-
+			        if (lstServices.getSelectedIndex() != -1) {
+			        	LocalDate selectedDate = dateModel.getElementAt(lstServices.getSelectedIndex());
+			        	LOGGER.info("Changing selection value of: " + selectedDate);
+			        	internalServiceList.put(selectedDate, !internalServiceList.get(selectedDate));
+			        	lstServices.clearSelection();
 			        }
 			    }
 			}
 		});
-		
 
 		// Add components to panel
 		add(lblTitle, "span 2,wrap");
@@ -125,12 +127,18 @@ public class CommunionFormPanel extends FormPanel {
             private static final long serialVersionUID = 1L;
 
 			@Override
-            public Component getListCellRendererComponent(JList<?> list,
-                    Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel listCellRendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,cellHasFocus);
                 listCellRendererComponent.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1,Color.GRAY));
                 listCellRendererComponent.setHorizontalAlignment(CENTER);
+                if(internalServiceList.get(value)) {
+                	listCellRendererComponent.setForeground(Color.WHITE);
+                	listCellRendererComponent.setBackground(Color.DARK_GRAY);
+                } else {
+                	listCellRendererComponent.setForeground(Color.BLACK);
+                	listCellRendererComponent.setBackground(Color.WHITE);
+                }
+                
                 return listCellRendererComponent;
             }
         };
@@ -158,6 +166,7 @@ public class CommunionFormPanel extends FormPanel {
 		// Add all services to the dateModel
 		for (LocalDate date: dateList) {
 			dateModel.addElement(date);
+			internalServiceList.put(date, false);
 		}
 		
 		// Makes sure each cell has the maximum space it can (assumes 4 columns)
