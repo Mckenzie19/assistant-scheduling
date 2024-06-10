@@ -16,14 +16,14 @@ abstract class FormPanel extends JPanel {
 	public interface MethodRunner{
 		public void run(Object arg);
 	}
-	
+
 	List<MethodRunner> dataSetters = new ArrayList<>();
 	List<Object> data = new ArrayList<>();
-	
+
 	abstract public void checkData() throws Exception;
-	
+
 	abstract public void loadData();
-	
+
 	public void saveData() {
 		LOGGER.info("Saving form data...");
 		for (int i = 0; i < dataSetters.size(); i++) {
@@ -31,7 +31,7 @@ abstract class FormPanel extends JPanel {
 		}
 		LOGGER.info("Form data saved.");
 	}
-	
+
 	public void discardData() {
 		LOGGER.info("Discarding form data...");
 		for (MethodRunner mr : dataSetters) {

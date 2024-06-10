@@ -1,4 +1,4 @@
-package dataio;
+package assistantscheduling.dataio;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,7 +62,7 @@ public class DataIO {
         } else {
         	result = fileChooser.showSaveDialog(frame);
         }
-        
+
         if (result == JFileChooser.APPROVE_OPTION) {
             return fileChooser.getSelectedFile();
         } else {
@@ -73,7 +73,7 @@ public class DataIO {
 	public void setInputFile(File file) {
 		inputFile = file;
 	}
-	
+
 	public void setOutputFile(File file) {
 		outputFile = file;
 	}
@@ -87,8 +87,8 @@ public class DataIO {
 		JSONObject jsonData = convertSolutionToJson(solution);
 		writeOutputData(jsonData);
 	}
-	
-	
+
+
 
 	/* INPUT CLASSES */
 

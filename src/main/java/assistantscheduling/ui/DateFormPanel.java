@@ -19,22 +19,22 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import dataio.DataFileCreator;
-import net.miginfocom.swing.MigLayout;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import assistantscheduling.dataio.DataFileCreator;
+import net.miginfocom.swing.MigLayout;
 
 public class DateFormPanel extends FormPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DateFormPanel.class);
-	
+
 	// This setup allows for the parent frame to instruct the panel to either save or discard all data, depending on the button selected
 	private static LocalDate[] serviceDateRange;
 	private static LocalDate[] additionalServices;
 
-	
+
 	// Declare dialog components
 	private JLabel lblTitle;
 	private JComboBox<String> comboStartMonth;
@@ -61,7 +61,7 @@ public class DateFormPanel extends FormPanel {
 		setBackground(Color.WHITE);
 		setOpaque(true);
 		setFocusable(true);
-		
+
 		dataSetters.add(new MethodRunner() {
 			@Override
 			public void run(Object arg) {
@@ -74,7 +74,7 @@ public class DateFormPanel extends FormPanel {
 				dfc.setAdditionalServices((LocalDate[]) arg);
 			}
 		});
-		
+
 		// Setup date selection data
 		String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 		Integer[] days = IntStream.rangeClosed(1, 31).boxed().toArray(Integer[]::new);
@@ -82,7 +82,7 @@ public class DateFormPanel extends FormPanel {
 		int thisYear = today.getYear();
 		int thisMonth = today.getMonthValue();
 		Integer[] years = IntStream.rangeClosed(thisYear, thisYear+5).boxed().toArray(Integer[]::new);
-		
+
 		// Initialize panel components
 		lblTitle = new JLabel("Set Schedule Date Range");
 		lblStartDate = new JLabel("Select Schedule Start Date");
@@ -100,7 +100,7 @@ public class DateFormPanel extends FormPanel {
 		lblAddServiceWarning = new JLabel("Please ensure dates follow requested formatting");
 		lblIllogicalDates = new JLabel("Please ensure dates are not in the past.");
 		lblMissingData = new JLabel("Please ensure all requested data is present.");
-		
+
 		// Set initial values and add action listeners
 		comboStartMonth.setSelectedItem(months[thisMonth-1]);
 		comboStartDay.setSelectedItem(today.getDayOfMonth());
@@ -109,6 +109,7 @@ public class DateFormPanel extends FormPanel {
 		comboEndDay.setSelectedItem(today.getDayOfMonth());
 		comboEndYear.setSelectedItem(thisYear);
 		chckbxSelectAdditionalServices.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					// Add Dates
@@ -141,6 +142,7 @@ public class DateFormPanel extends FormPanel {
 			}
 		});
 		txtAdditionalServices.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				checkAdditionalDateFormatting();
 				// Loose the focus
@@ -148,8 +150,8 @@ public class DateFormPanel extends FormPanel {
 				requestFocusInWindow();
 			}
 		});
-		
-		// Set styles 
+
+		// Set styles
 		lblTitle.setFont(StyleSettings.TITLE_FONT);
 		lblStartDate.setFont(StyleSettings.SUBTITLE_FONT);
 		comboStartMonth.setFont(StyleSettings.CONTENT_FONT);
@@ -177,7 +179,7 @@ public class DateFormPanel extends FormPanel {
 		lblMissingData.setFont(StyleSettings.WARNING_FONT);
 		lblMissingData.setForeground(Color.RED);
 		lblMissingData.setVisible(false);
-		
+
 		// Add components to panel
 		add(lblTitle, "span 2,wrap");
 		add(lblStartDate, "span 2,wrap");
@@ -194,10 +196,12 @@ public class DateFormPanel extends FormPanel {
 		add(lblIllogicalDates, "span 3,shrinkx,wrap");
 		add(lblMissingData, "span 3,shrinkx,wrap");
 	}
-	
+
 	public boolean checkAdditionalDateFormatting() {
 		String fieldText = txtAdditionalServices.getText();
-		if (fieldText.length() == 0) return false;
+		if (fieldText.length() == 0) {
+			return false;
+		}
 		try {
 			String[] splitText = fieldText.split(", ", 0);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("[MM/dd/yyyy][MM/d/yyyy][M/dd/yyyy][M/d/yyyy]", Locale.ENGLISH);
@@ -242,7 +246,7 @@ public class DateFormPanel extends FormPanel {
 				lblIllogicalDates.setVisible(false);
 				serviceDateRange = new LocalDate[2];
 				serviceDateRange[0] = startDate;
-				serviceDateRange[1] = endDate;	
+				serviceDateRange[1] = endDate;
 				// Add dates to FormPanel data list to be saved by parent frame
 				data.add(serviceDateRange);
 				data.add(additionalServices);
@@ -255,10 +259,10 @@ public class DateFormPanel extends FormPanel {
 			throw new Exception("Missing date data.");
 		}
 	}
-	
+
 	private boolean allDataEntered() {
 		LOGGER.info("Checking if all data entered...");
-		boolean mainRangeSelected = (comboStartMonth.getSelectedItem() != null) && (comboStartDay.getSelectedItem() != null) && (comboStartYear.getSelectedItem() != null) 
+		boolean mainRangeSelected = (comboStartMonth.getSelectedItem() != null) && (comboStartDay.getSelectedItem() != null) && (comboStartYear.getSelectedItem() != null)
 				&& (comboEndMonth.getSelectedItem() != null) && (comboEndDay.getSelectedItem() != null) && (comboEndYear.getSelectedItem() != null);
 		if (chckbxSelectAdditionalServices.isSelected()) {
 			return mainRangeSelected && checkAdditionalDateFormatting();
@@ -266,7 +270,7 @@ public class DateFormPanel extends FormPanel {
 			return mainRangeSelected;
 		}
 	}
-	
+
 	private boolean dateRangeLogical(LocalDate startDate, LocalDate endDate) {
 		LOGGER.info("Checking if date range is logical...");
 		return startDate.isBefore(endDate) && (startDate.isAfter(LocalDate.now()) || startDate.isEqual(LocalDate.now()));
@@ -276,5 +280,5 @@ public class DateFormPanel extends FormPanel {
 	public void loadData() {
 		return;
 	}
-	
+
 }

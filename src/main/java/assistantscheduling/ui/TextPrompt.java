@@ -2,16 +2,20 @@ package assistantscheduling.ui;
 
 /**
  * Obtained from https://github.com/tips4java/tips4java/blob/main/source/TextPrompt.java
- * Code written by "tips4java" as a way to extend the abilities of a Swing GUI 
+ * Code written by "tips4java" as a way to extend the abilities of a Swing GUI
  */
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
 /**
  *  The TextPrompt class will display a prompt over top of a text component when
@@ -56,7 +60,7 @@ public class TextPrompt extends JLabel
 		setFont( component.getFont() );
 		setForeground( component.getForeground() );
 		setBorder( new EmptyBorder(component.getInsets()) );
-		setHorizontalAlignment(JLabel.LEADING);
+		setHorizontalAlignment(SwingConstants.LEADING);
 
 		component.addFocusListener( this );
 		document.addDocumentListener( this );
@@ -165,15 +169,11 @@ public class TextPrompt extends JLabel
 	{
 		//  Text has been entered, remove the prompt
 
-		if (document.getLength() > 0)
-		{
-			setVisible( false );
-			return;
-		}
+
 
 		//  Prompt has already been shown once, remove it
 
-		if (showPromptOnce && focusLost > 0)
+		if ((document.getLength() > 0) || (showPromptOnce && focusLost > 0))
 		{
 			setVisible(false);
 			return;
@@ -185,28 +185,32 @@ public class TextPrompt extends JLabel
         if (component.hasFocus())
         {
         	if (show == Show.ALWAYS
-        	||  show ==	Show.FOCUS_GAINED)
-        		setVisible( true );
-        	else
-        		setVisible( false );
+        	||  show ==	Show.FOCUS_GAINED) {
+				setVisible( true );
+			} else {
+				setVisible( false );
+			}
         }
         else
         {
         	if (show == Show.ALWAYS
-        	||  show ==	Show.FOCUS_LOST)
-        		setVisible( true );
-        	else
-        		setVisible( false );
+        	||  show ==	Show.FOCUS_LOST) {
+				setVisible( true );
+			} else {
+				setVisible( false );
+			}
         }
 	}
 
 //  Implement FocusListener
 
+	@Override
 	public void focusGained(FocusEvent e)
 	{
 		checkForPrompt();
 	}
 
+	@Override
 	public void focusLost(FocusEvent e)
 	{
 		focusLost++;
@@ -215,15 +219,18 @@ public class TextPrompt extends JLabel
 
 //  Implement DocumentListener
 
+	@Override
 	public void insertUpdate(DocumentEvent e)
 	{
 		checkForPrompt();
 	}
 
+	@Override
 	public void removeUpdate(DocumentEvent e)
 	{
 		checkForPrompt();
 	}
 
+	@Override
 	public void changedUpdate(DocumentEvent e) {}
 }

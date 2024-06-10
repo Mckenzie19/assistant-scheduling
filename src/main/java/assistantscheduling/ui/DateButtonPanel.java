@@ -16,12 +16,12 @@ public class DateButtonPanel extends JPanel implements ButtonPanel{
 	public DateButtonPanel() {
 		setLayout(new MigLayout("wrap 3", "[]push[][]", "[]"));
 		setFocusable(true);
-		
+
 		// Set style and formatting
 		btnNext.setFont(StyleSettings.SUBTITLE_FONT);
 		btnBack.setFont(StyleSettings.SUBTITLE_FONT);
 		btnCancel.setFont(StyleSettings.SUBTITLE_FONT);
-		
+
 		add(btnCancel);
 		add(btnBack);
 		add(btnNext);
@@ -29,7 +29,7 @@ public class DateButtonPanel extends JPanel implements ButtonPanel{
 
 	@Override
 	public void nextAddActionListener(ActionListener a) {
-		btnNext.addActionListener(a);		
+		btnNext.addActionListener(a);
 	}
 
 	@Override

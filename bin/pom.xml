@@ -1,16 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>AssistantScheduler</groupId>
-	<artifactId>optaplanner-assistant-scheduler</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>com.christluth</groupId>
+	<artifactId>assistant-scheduling</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>Worship Assistant Scheduler</name>
 	<description>A java application that utilizes Optaplanner to create a worship assistant schedule based on an excel spreadsheet input.</description>
+	
+	<properties>
+	 	 <configuration-mainClass>assistantscheduling.AssistantSchedulingApp</configuration-mainClass>
+	 	 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
 	<!-- https://mvnrepository.com/artifact/org.optaplanner/optaplanner-core -->
 	<dependencies>
 		<dependency>
 			<groupId>org.optaplanner</groupId>
 			<artifactId>optaplanner-core</artifactId>
 			<version>9.44.0.Final</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.optaplanner/optaplanner-core-impl -->
+		<dependency>
+		    <groupId>org.optaplanner</groupId>
+		    <artifactId>optaplanner-core-impl</artifactId>
+		    <version>9.44.0.Final</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
 		<dependency>
@@ -36,15 +48,37 @@
 		    <artifactId>json</artifactId>
 		    <version>20240303</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
+		<dependency>
+		    <groupId>com.jgoodies</groupId>
+		    <artifactId>jgoodies-forms</artifactId>
+		    <version>1.8.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-swing -->
+		<dependency>
+		    <groupId>com.miglayout</groupId>
+		    <artifactId>miglayout-swing</artifactId>
+		    <version>11.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-simple</artifactId>
-		    <version>2.0.0-alpha0</version>
-		    <scope>runtime</scope>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>2.0.13</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.5.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-core</artifactId>
+		    <version>1.5.6</version>
 		</dependency>
 
-		
 		<!-- Testing -->
 		<!-- https://mvnrepository.com/artifact/org.optaplanner/optaplanner-test -->
 		<dependency>
@@ -65,6 +99,76 @@
 	          <mainClass>assistantscheduling.AssistantSchedulingApp</mainClass>
 	        </configuration>
 	      </plugin>
+	      
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-compiler-plugin</artifactId>
+	        <version>3.8.0</version>
+	        <configuration>
+	        	<release>16</release>
+	        </configuration>
+	      </plugin>
+	      
+	      <plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-dependency-plugin</artifactId>
+		    <executions>
+		    	<execution>
+		        	<id>copy-dependencies</id>
+		            <phase>prepare-package</phase>
+		            <goals>
+		            	<goal>copy-dependencies</goal>
+		            </goals>
+		            <configuration>
+		            	<outputDirectory>target/lib</outputDirectory>
+		            	<overWriteReleases>false</overWriteReleases>
+		            	<overWriteSnapshots>false</overWriteSnapshots>
+		           		<overWriteIfNewer>true</overWriteIfNewer>
+		            </configuration>
+		        </execution>
+		    </executions>
+		  </plugin>
+	      
+	      <plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-jar-plugin</artifactId>
+		      <version>3.2.0</version>
+		      <configuration>
+		      	<outputDirectory>target/debug</outputDirectory>
+		        <archive>
+		        	<manifest>
+		            	<addClasspath>true</addClasspath>
+		            	<classpathPrefix>lib/</classpathPrefix>
+		            	<mainClass>assistantscheduling.AssistantSchedulingApp</mainClass>
+		          	</manifest>
+		          	<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+		        </archive>
+		      </configuration>
+    	 </plugin>
+	      
+	      <plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-assembly-plugin</artifactId>
+			<executions>
+				<execution>
+			    	<phase>package</phase>
+			        <goals>
+			        	<goal>single</goal>
+			        </goals>
+			        <configuration>
+			        	<archive>
+			            	<manifest>
+			                	<mainClass>assistantscheduling.AssistantSchedulingApp</mainClass>
+			                </manifest>
+			            </archive>
+			            <descriptorRefs>
+			            	<descriptorRef>jar-with-dependencies</descriptorRef>
+			            </descriptorRefs>
+			        </configuration>
+			    </execution>
+			</executions>
+		  </plugin>
+
 	    </plugins>
     </build>
 </project>

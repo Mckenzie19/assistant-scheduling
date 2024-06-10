@@ -1,14 +1,5 @@
 package assistantscheduling.ui;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.TableColumn;
-
-import net.miginfocom.swing.MigLayout;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -18,6 +9,15 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableColumn;
+
+import net.miginfocom.swing.MigLayout;
 
 public class StartButtonPanel extends JPanel{
 
@@ -31,13 +31,13 @@ public class StartButtonPanel extends JPanel{
 	public StartButtonPanel() {
 		setLayout(new MigLayout("wrap 2", "[]push[]", "[]"));
 		setFocusable(true);
-		
+
 		btnHelp = new JButton("Help");
 		btnBegin = new JButton("Begin");
-		
+
 		btnHelp.setFont(StyleSettings.SUBTITLE_FONT);
 		btnBegin.setFont(StyleSettings.SUBTITLE_FONT);
-		
+
 		btnHelp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -45,15 +45,15 @@ public class StartButtonPanel extends JPanel{
 				helpDialog.setVisible(true);
 			}
 		});
-		
+
 		add(btnHelp);
 		add(btnBegin);
 	}
-	
+
 	public void startAddActionListener(ActionListener a) {
 		btnBegin.addActionListener(a);
 	}
-	
+
 	private class HelpDialog extends JDialog {
 
 		private static final long serialVersionUID = 1L;
@@ -65,10 +65,10 @@ public class StartButtonPanel extends JPanel{
 		 */
 		public HelpDialog() {
 			setModal(true);
-			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			setFont(StyleSettings.SUBTITLE_FONT);
 			setTitle("Help");
-			
+
 			// Sets preferred size of popup
 			Toolkit tk = Toolkit.getDefaultToolkit();
 			Dimension d = tk.getScreenSize();
@@ -76,7 +76,7 @@ public class StartButtonPanel extends JPanel{
 			setPreferredSize(appD);
 			getContentPane().setLayout(new BorderLayout(0, 0));
 			contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-			
+
 			getContentPane().add(contentPanel);
 			contentPanel.setLayout(new BorderLayout(0, 0));
 			{
@@ -111,7 +111,7 @@ public class StartButtonPanel extends JPanel{
 				helpMessage.setText("The assistant data must be stored in an Excel file (.xlsx). There should be 4 columns, with the names \"Name\", \"Unavailable Months\", \"Frequency\", and \"Preferred Positions\".\n\nThe Name column should contain the first and last name of the assistant, with a single space seperating names.\nThe Unavailable Months column should contain a list of months. Each month should be seperated by a single semi-colon (;), with no spaces.\nThe Frequency column should include the exact option that the assistant chose on the sign-up form. Options include: \"Once per month\", \"As often as you need me\", \"Twice a year\", \"Once a quarter\".\nThe Preferred Positions column should contain a list of position names. Each position should be seperated from the next one by a single semicolon (;) and no spaces. \n\nPlease ensure there are no spelling errors, as this can cause the propgram to reject that row. ");
 				contentPanel.add(helpMessage, BorderLayout.NORTH);
 			}
-			
+
 			{
 				JPanel buttonPane = new JPanel();
 				buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -121,6 +121,7 @@ public class StartButtonPanel extends JPanel{
 					okButton.setFont(StyleSettings.SUBTITLE_FONT);
 					okButton.setActionCommand("OK");
 					okButton.addActionListener(new ActionListener() {
+						@Override
 						public void actionPerformed(ActionEvent e) {
 							dispose();
 						}
@@ -129,7 +130,7 @@ public class StartButtonPanel extends JPanel{
 					getRootPane().setDefaultButton(okButton);
 				}
 			}
-			
+
 			// Pack popup and set location
 			pack();
 			setLocationRelativeTo(null);

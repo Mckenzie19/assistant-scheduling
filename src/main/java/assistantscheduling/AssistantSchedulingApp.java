@@ -10,7 +10,6 @@ import javax.swing.UIManager;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
 import org.optaplanner.core.config.solver.SolverConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,18 +33,19 @@ public class AssistantSchedulingApp {
 	                // Sets how long the solver will run for
 	                .withTerminationSpentLimit(Duration.ofMinutes(5)));
 	    	solver = solverFactory.buildSolver();
-	    	
+
 	    	// Splash splash = new Splash();
 	    	LOGGER.info("Scheduling application gui...");
 	    	EventQueue.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					try {
 	                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	                } catch (Exception e) {
 	                    LOGGER.error(e.getMessage());
-	                    
+
 	                }
-					
+
 					try {
 						JFrame applicationFrame = new MainFrame();
 						applicationFrame.setVisible(true);
