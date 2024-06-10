@@ -209,17 +209,21 @@ public class MainFrame extends JFrame {
 		// Initialize button panels
 		StartButtonPanel startButtonPanel = new StartButtonPanel();
 		ButtonPanel dateButtonPanel = new DateButtonPanel();
+		ButtonPanel communionButtonPanel = new CommunionButtonPanel();
 
 		// Add action listeners to buttons
 		startButtonPanel.startAddActionListener(e -> loadNextPage());
 		dateButtonPanel.nextAddActionListener(e -> loadNextPage());
 		dateButtonPanel.backAddActionListener(e -> loadPreviousPage());
 		dateButtonPanel.cancelAddActionListener(e -> cancel());
+		communionButtonPanel.nextAddActionListener(e -> loadNextPage());
+		communionButtonPanel.backAddActionListener(e -> loadPreviousPage());
+		communionButtonPanel.cancelAddActionListener(e -> cancel());
 
 		// Add button panels to main button panel
 		buttonPanel.add(startButtonPanel);
 		buttonPanel.add((JPanel)dateButtonPanel);
-		buttonPanel.add((JPanel)dateButtonPanel); // TODO: Temp please fix
+		buttonPanel.add((JPanel)communionButtonPanel); 
 	}
 
 	/**
