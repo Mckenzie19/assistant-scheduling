@@ -208,24 +208,28 @@ public class MainFrame extends JFrame {
 	private void initializeButtonPanels() {
 		// Initialize button panels
 		StartButtonPanel startButtonPanel = new StartButtonPanel();
-		ButtonPanel dateButtonPanel = new DateButtonPanel();
-		ButtonPanel communionButtonPanel = new CommunionButtonPanel();
+		DataCollectionButtonPanel dataCollectionButtonPanel = new DataCollectionButtonPanel();
 
 		// Add action listeners to buttons
-		startButtonPanel.startAddActionListener(e -> loadNextPage());
-		dateButtonPanel.nextAddActionListener(e -> loadNextPage());
-		dateButtonPanel.backAddActionListener(e -> loadPreviousPage());
-		dateButtonPanel.cancelAddActionListener(e -> cancel());
-		communionButtonPanel.nextAddActionListener(e -> loadNextPage());
-		communionButtonPanel.backAddActionListener(e -> loadPreviousPage());
-		communionButtonPanel.cancelAddActionListener(e -> cancel());
+		startButtonPanel.startAddActionListener(e -> loadFirstPage());
+		dataCollectionButtonPanel.nextAddActionListener(e -> loadNextPage());
+		dataCollectionButtonPanel.backAddActionListener(e -> loadPreviousPage());
+		dataCollectionButtonPanel.cancelAddActionListener(e -> cancel());
 
 		// Add button panels to main button panel
 		buttonPanel.add(startButtonPanel);
-		buttonPanel.add((JPanel)dateButtonPanel);
-		buttonPanel.add((JPanel)communionButtonPanel); 
+		buttonPanel.add(dataCollectionButtonPanel);
 	}
 
+	/**
+	 * Loads the first data collection page (no need to save current data or load in previous data)
+	 */
+	private void loadFirstPage() {
+		formLayout.next(formPanel);
+		buttonLayout.next(buttonPanel);
+		panelNum++;
+	}
+	
 	/**
 	 * Checks and saves the data from the current panel. If that succeeds, loads the next panel, otherwise internal data checks display warnings.
 	 */
@@ -241,7 +245,6 @@ public class MainFrame extends JFrame {
 		FormPanel nextPanel = (FormPanel) formPanel.getComponent(panelNum);
 		nextPanel.loadData();
 		formLayout.next(formPanel);
-		buttonLayout.next(buttonPanel);
 		panelNum++;
 	}
 
@@ -252,8 +255,8 @@ public class MainFrame extends JFrame {
 		FormPanel currPanel = (FormPanel) formPanel.getComponent(panelNum-1);
 		currPanel.discardData();
 		formLayout.previous(formPanel);
-		buttonLayout.previous(buttonPanel);
 		panelNum--;
+		if(panelNum == 1) buttonLayout.previous(buttonPanel);
 	}
 
 	private void cancel() {

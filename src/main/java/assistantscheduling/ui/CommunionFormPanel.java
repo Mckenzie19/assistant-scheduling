@@ -111,8 +111,8 @@ public class CommunionFormPanel extends FormPanel {
 	 * @param dayOfWeek - DayOfWeek value that indicates what day of the week to select
 	 */
 	public ArrayList<LocalDate> getListWeekly(LocalDate startDate, LocalDate endDate, DayOfWeek dayOfWeek) {
-		LocalDate firstActualDay = startDate.with(TemporalAdjusters.next(dayOfWeek));
-		LocalDate lastActualDay = endDate.with(TemporalAdjusters.previous(dayOfWeek));
+		LocalDate firstActualDay = (startDate.getDayOfWeek() == dayOfWeek) ? startDate : startDate.with(TemporalAdjusters.next(dayOfWeek));
+		LocalDate lastActualDay = (endDate.getDayOfWeek() == dayOfWeek) ? endDate : endDate.with(TemporalAdjusters.previous(dayOfWeek));
 		ArrayList<LocalDate> dateList = new ArrayList<>();
 		LocalDate temp = firstActualDay;
 		while (temp.isBefore(lastActualDay)) {

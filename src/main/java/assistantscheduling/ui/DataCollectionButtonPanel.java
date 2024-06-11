@@ -2,18 +2,19 @@ package assistantscheduling.ui;
 
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-public class DateButtonPanel extends JPanel implements ButtonPanel{
+public class DataCollectionButtonPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	public static final JButton btnNext = new JButton("Next>");
+	public static final JButton btnBack = new JButton("<Back");
+	public static final JButton btnCancel = new JButton("Cancel");
 
-	/**
-	 * Create the panel.
-	 */
-	public DateButtonPanel() {
+	public DataCollectionButtonPanel() {
 		setLayout(new MigLayout("wrap 3", "[]push[][]", "[]"));
 		setFocusable(true);
 
@@ -26,20 +27,17 @@ public class DateButtonPanel extends JPanel implements ButtonPanel{
 		add(btnBack);
 		add(btnNext);
 	}
-
-	@Override
+	
 	public void nextAddActionListener(ActionListener a) {
-		btnNext.addActionListener(a);
+		btnNext.addActionListener(a);		
 	}
 
-	@Override
 	public void backAddActionListener(ActionListener a) {
-		btnBack.addActionListener(a);
+		btnBack.addActionListener(a);		
 	}
 
-	@Override
 	public void cancelAddActionListener(ActionListener a) {
-		btnCancel.addActionListener(a);
+		btnCancel.addActionListener(a);		
 	}
 
 }

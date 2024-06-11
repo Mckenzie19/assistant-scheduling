@@ -44,7 +44,6 @@ class DataSetupPanel1 extends JPanel {
 
 	private DataIO dataHandler;
 	private DataFileCreator dataFileCreator;
-	private DataSetupDialog parent;
 
 	// Declare dialog components
 	private JLabel lblAssistantData;
@@ -60,10 +59,9 @@ class DataSetupPanel1 extends JPanel {
 	private JButton btnCancel;
 	private JButton btnPg1Next;
 
-	public DataSetupPanel1(DataIO dataHandler, DataFileCreator dataFileCreator, DataSetupDialog parent) {
+	public DataSetupPanel1(DataIO dataHandler, DataFileCreator dataFileCreator) {
 		this.dataHandler = dataHandler;
 		this.dataFileCreator = dataFileCreator;
-		this.parent = parent;
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new MigLayout(
 				"wrap 3",     // Layout constraints
@@ -181,30 +179,7 @@ class DataSetupPanel1 extends JPanel {
 		add(warningLabel, "span2,shrinkx,wrap");
 
 
-		// Fifth Row
-		btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.dispose();
-			}
-		});
-		btnCancel.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		add(btnCancel, "tag cancel,alignx left");
-
-		btnPg1Next = new JButton("Next >>");
-		btnPg1Next.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (allDataEntered()) {
-					parent.goToNextPanel();
-				} else {
-					JOptionPane.showMessageDialog(parent, "Please ensure all required data is provided.", "Data Input Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		btnPg1Next.setFont(new Font("Proxima Nova", Font.PLAIN, 14));
-		add(btnPg1Next, "skip 1,right,tag next");
+		
 
 		setFocusable(true);
 		addMouseListener(new MyMouseListener());
