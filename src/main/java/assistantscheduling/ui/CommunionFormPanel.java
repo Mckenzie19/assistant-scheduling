@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -14,6 +15,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -34,11 +36,12 @@ public class CommunionFormPanel extends FormPanel {
 	private static DataFileCreator dfc;
 
 	// This setup allows for the parent frame to instruct the panel to either save or discard all data, depending on the button selected
-	//TODO: Add ability to track which services are communion in the dfc
+	private static LocalDate[] communionServices;
 
 
 	// Declare dialog components
 	private JLabel lblTitle;
+	private JTextArea txtInfo;
 	private JList<LocalDate> lstServices;
 	private JScrollPane scrollPane;
 	private DefaultListModel<LocalDate> dateModel = new DefaultListModel<LocalDate>();
@@ -64,12 +67,30 @@ public class CommunionFormPanel extends FormPanel {
 		});
 
 		// Initialize panel components
-		lblTitle = new JLabel("Select Communion Sundays");
-		// Temporary data allows for the creation of the list model. This gets cleared upon data loading.
-		dateModel.addElement(LocalDate.now()); 
-		internalServiceList.put(LocalDate.now(), false);
+		lblTitle = new JLabel("Select Communion Services");
+		txtInfo = new JTextArea("Please select which services will include communion. The first two sundays of each month have already been selected for you.");
 		lstServices = new JList<LocalDate>(dateModel);
 		scrollPane = new JScrollPane(lstServices);
+		
+		// Set initial settings and content
+		// Temporary data allows for the creation of the list model. This gets cleared upon data loading.
+		txtInfo.setLineWrap(true);
+		txtInfo.setWrapStyleWord(true);
+		dateModel.addElement(LocalDate.now()); 
+		internalServiceList.put(LocalDate.now(), false);
+		lstServices.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lstServices.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) { // Prevents duplicate fires of the event
+			        if (lstServices.getSelectedIndex() != -1) {
+			        	LocalDate selectedDate = dateModel.getElementAt(lstServices.getSelectedIndex());
+			        	internalServiceList.put(selectedDate, !internalServiceList.get(selectedDate));
+			        	lstServices.clearSelection(); // Ensures user can select the same cell twice in a row
+			        }
+			    }
+			}
+		});
 
 		// Set styles
 		lblTitle.setFont(StyleSettings.TITLE_FONT);
@@ -80,25 +101,9 @@ public class CommunionFormPanel extends FormPanel {
 		lstServices.setVisibleRowCount(-1);
 		scrollPane.getViewport().setView(lstServices);
 
-
-		// Set initial settings and content
-		lstServices.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		lstServices.addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				if (!e.getValueIsAdjusting()) {
-			        if (lstServices.getSelectedIndex() != -1) {
-			        	LocalDate selectedDate = dateModel.getElementAt(lstServices.getSelectedIndex());
-			        	LOGGER.info("Changing selection value of: " + selectedDate);
-			        	internalServiceList.put(selectedDate, !internalServiceList.get(selectedDate));
-			        	lstServices.clearSelection();
-			        }
-			    }
-			}
-		});
-
 		// Add components to panel
 		add(lblTitle, "span 2,wrap");
+		add(txtInfo, "span 2,wrap,growx");
 		add(scrollPane, "grow");
 	}
 
@@ -115,7 +120,7 @@ public class CommunionFormPanel extends FormPanel {
 		LocalDate lastActualDay = (endDate.getDayOfWeek() == dayOfWeek) ? endDate : endDate.with(TemporalAdjusters.previous(dayOfWeek));
 		ArrayList<LocalDate> dateList = new ArrayList<>();
 		LocalDate temp = firstActualDay;
-		while (temp.isBefore(lastActualDay)) {
+		while (temp.isBefore(lastActualDay) || temp.isEqual(lastActualDay)) {
 			dateList.add(temp);
 			temp = temp.plusWeeks(1);
 		}
@@ -133,7 +138,7 @@ public class CommunionFormPanel extends FormPanel {
                 listCellRendererComponent.setHorizontalAlignment(CENTER);
                 if(internalServiceList.get(value)) {
                 	listCellRendererComponent.setForeground(Color.WHITE);
-                	listCellRendererComponent.setBackground(Color.DARK_GRAY);
+                	listCellRendererComponent.setBackground(new Color(63, 131, 81));
                 } else {
                 	listCellRendererComponent.setForeground(Color.BLACK);
                 	listCellRendererComponent.setBackground(Color.WHITE);
@@ -145,9 +150,20 @@ public class CommunionFormPanel extends FormPanel {
     }
 
 	@Override
+	/**
+	 * Add all selected communion dates to the data tracker structure
+	 */
 	public void checkData() throws Exception {
-		// TODO Auto-generated method stub
-
+		int numServices = Collections.frequency(internalServiceList.values(), true);
+		communionServices = new LocalDate[numServices];
+		int i = 0;
+		for (LocalDate date : internalServiceList.keySet()) {
+			if (internalServiceList.get(date)) {
+				communionServices[i] = date;
+				i++; // Only increase array index when we add something
+			}
+		}
+		data.add(communionServices);
 	}
 
 	@Override

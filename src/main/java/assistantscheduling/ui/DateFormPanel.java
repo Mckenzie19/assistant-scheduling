@@ -278,6 +278,7 @@ public class DateFormPanel extends FormPanel {
 
 	@Override
 	public void loadData() {
+		// No previous data to load, return immediately
 		return;
 	}
 

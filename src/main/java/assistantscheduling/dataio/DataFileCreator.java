@@ -52,6 +52,7 @@ public class DataFileCreator {
 
 	public void setCommunionDates(LocalDate[] communionDates) {
 		this.communionDates = communionDates;
+		LOGGER.info("Set communion service dates: " + Arrays.toString(communionDates));
 	}
 
 	public File getOutputFile() {

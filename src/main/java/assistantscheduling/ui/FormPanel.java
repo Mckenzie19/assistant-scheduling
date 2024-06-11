@@ -21,7 +21,6 @@ abstract class FormPanel extends JPanel {
 	List<Object> data = new ArrayList<>();
 
 	abstract public void checkData() throws Exception;
-
 	abstract public void loadData();
 
 	public void saveData() {
@@ -39,4 +38,5 @@ abstract class FormPanel extends JPanel {
 		}
 		LOGGER.info("Form data discarded.");
 	}
+	
 }
