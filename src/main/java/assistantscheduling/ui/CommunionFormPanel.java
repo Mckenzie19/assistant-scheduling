@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -182,7 +183,11 @@ public class CommunionFormPanel extends FormPanel {
 		// Add all services to the dateModel
 		for (LocalDate date: dateList) {
 			dateModel.addElement(date);
-			internalServiceList.put(date, false);
+			// Check if the date is one of the first two sundays in the month, in which case set as true
+			LocalDate firstSunday = date.with(TemporalAdjusters.firstInMonth(DayOfWeek.SUNDAY));
+			LocalDate secondSunday = firstSunday.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+			boolean isCommunionDate = (date.isEqual(firstSunday) || date.isEqual(secondSunday)) ? true : false;
+			internalServiceList.put(date, isCommunionDate);
 		}
 		
 		// Makes sure each cell has the maximum space it can (assumes 4 columns)
