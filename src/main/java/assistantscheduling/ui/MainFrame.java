@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import assistantscheduling.dataio.DataFileCreator;
+import assistantscheduling.dataio.DataIO;
 import net.miginfocom.swing.MigLayout;
 
 public class MainFrame extends JFrame {
@@ -41,6 +42,7 @@ public class MainFrame extends JFrame {
 	private static final String bannerLocation = "images/BannerImage.gif";
 
 	private final DataFileCreator dfc = new DataFileCreator();
+	private final DataIO dataIO = new DataIO();
 
 	// Used to track which panel is currently shown. Set to 0 until panels are initialized.
 	private static int panelNum = 0;
@@ -197,9 +199,11 @@ public class MainFrame extends JFrame {
 		FormPanel startFormPanel = new StartFormPanel();
 		FormPanel dateFormPanel = new DateFormPanel(dfc);
 		FormPanel communionFormPanel = new CommunionFormPanel(dfc);
+		FormPanel assistantDataFormPanel = new AssistantDataFormPanel(dfc, dataIO);
 		formPanel.add(startFormPanel);
 		formPanel.add(dateFormPanel);
 		formPanel.add(communionFormPanel);
+		formPanel.add(assistantDataFormPanel);
 	}
 
 	/**

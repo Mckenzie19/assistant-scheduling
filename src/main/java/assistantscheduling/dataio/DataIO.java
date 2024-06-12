@@ -1,5 +1,6 @@
 package assistantscheduling.dataio;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -35,6 +35,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import assistantscheduling.domain.Assistant;
 import assistantscheduling.domain.AssistantSchedule;
 import assistantscheduling.domain.Position;
@@ -45,12 +48,14 @@ public class DataIO {
 
 	private File outputFile;
 	private File inputFile;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataIO.class);
+
 
 	public DataIO() {}
 
 	/* PUBLIC CLASSES */
 
-	public File selectFile(JFrame frame, boolean save) {
+	public File selectFile(Component parent, boolean save) {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("EXCEL Files", "xlsx");
         fileChooser.setFileFilter(fileFilter);
@@ -58,9 +63,9 @@ public class DataIO {
         fileChooser.setDialogTitle("Select file");
         int result = JFileChooser.CANCEL_OPTION;
         if (!save) {
-        	result = fileChooser.showOpenDialog(frame);
+        	result = fileChooser.showOpenDialog(parent);
         } else {
-        	result = fileChooser.showSaveDialog(frame);
+        	result = fileChooser.showSaveDialog(parent);
         }
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -79,7 +84,7 @@ public class DataIO {
 	}
 
 	public AssistantSchedule getData() {
-		JSONObject jsonData = getInputDataFromFile();
+		JSONObject jsonData = getJSONDataFromFile(inputFile);
 		return convertJsonToProblem(jsonData);
 	}
 
@@ -88,13 +93,9 @@ public class DataIO {
 		writeOutputData(jsonData);
 	}
 
-
-
-	/* INPUT CLASSES */
-
-	private JSONObject getInputDataFromFile() {
+	public JSONObject getJSONDataFromFile(File dataFile) {
 		 JSONObject jsonWorkbook = new JSONObject();
-	        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(inputFile))) {
+	        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(dataFile))) {
 	            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 	                Sheet sheet = workbook.getSheetAt(i);
 	                JSONArray jsonSheet = new JSONArray();
@@ -120,6 +121,34 @@ public class DataIO {
 	        }
 	        return jsonWorkbook;
 	}
+	
+	/**
+	 * Used for importing Assistant data (single sheet, no need to actively track the column headers, as they are known)
+	 */
+	public List<List<String>> getStringDataFromFile(File dataFile) throws IOException,NullPointerException{
+		try (Workbook workbook = new XSSFWorkbook(new FileInputStream(dataFile))) {
+			List<List<String>> fileData = new ArrayList<List<String>>();
+	        Sheet sheet = workbook.getSheetAt(0); // There should only ever be one sheet
+	        Row headerRow = sheet.getRow(0);
+	        for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+	            Row currentRow = sheet.getRow(rowIndex);
+	            List<String> rowList = new ArrayList<String>();
+	            for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
+	                Cell currentCell = currentRow.getCell(cellIndex);
+	                if (currentCell == null) {
+	                	rowList.add("");
+	                } else {
+	                    rowList.add(currentCell.getStringCellValue());
+	                }
+	            }
+	            LOGGER.info("Added new row: " + rowList.toString());
+	            fileData.add(rowList);
+	        }
+	        return fileData;
+        }
+	}
+
+	/* INPUT CLASSES */
 
 	private static Object getCellValue(Cell cell) {
 		switch (cell.getCellType()) {
@@ -150,8 +179,8 @@ public class DataIO {
 		JSONArray services = jsonData.getJSONArray("Services");
 		List<Service> serviceList = new ArrayList<>();
 		// Use this to make sure date entries convert properly
-		 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("[M/d/yy][M/d/yyyy][MM/dd/yy][MM/dd/yyyy]");
-		 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("[hh:mm a][h:mm a][hh a][h a]");
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("[M/d/yy][M/d/yyyy][MM/dd/yy][MM/dd/yyyy]");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("[hh:mm a][h:mm a][hh a][h a]");
 		for(int i = 0; i<services.length(); i++) {
 			JSONObject serviceJSON = services.getJSONObject(i);
 			// Retrieve String name

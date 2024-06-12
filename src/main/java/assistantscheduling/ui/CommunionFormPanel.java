@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,9 +73,10 @@ public class CommunionFormPanel extends FormPanel {
 		scrollPane = new JScrollPane(lstServices);
 		
 		// Set initial settings and content
-		// Temporary data allows for the creation of the list model. This gets cleared upon data loading.
 		txtInfo.setLineWrap(true);
 		txtInfo.setWrapStyleWord(true);
+		txtInfo.setEditable(false);
+		// Temporary data allows for the creation of the list model. This gets cleared upon data loading.
 		dateModel.addElement(LocalDate.now()); 
 		internalServiceList.put(LocalDate.now(), false);
 		lstServices.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
