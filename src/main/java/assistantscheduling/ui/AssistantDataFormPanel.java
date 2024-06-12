@@ -128,7 +128,6 @@ public class AssistantDataFormPanel extends FormPanel {
 		for (int i = 0; i<newData.size(); i++) {
 			tableModel.addRow(newData.get(i));
 		}
-		//tableModel.fireTableDataChanged();
 	}
 
 	@Override
@@ -139,8 +138,7 @@ public class AssistantDataFormPanel extends FormPanel {
 
 	@Override
 	public void loadData() {
-		// TODO Auto-generated method stub
-		
+		return; // No data to load, return immediately
 	}
 	
 	class AssistantTableModel extends AbstractTableModel {
@@ -197,31 +195,17 @@ public class AssistantDataFormPanel extends FormPanel {
 	    	assistantList.set(rowIndex, row);
 	    }
 	    
-	    public void addRow(List<String> rowData) {
-	    	addRow(convertToVector(rowData));
-	    }
-	    
-	    public void addRow(Vector<String> rowData) {
+	    public void addRow(List<String>rowData) {
 	    	insertRow(getRowCount(), rowData);
 	    }
 	    
-	    public void insertRow(int row, Vector<String> rowData) {
+	    public void insertRow(int row, List<String> rowData) {
 	    	if (row >= assistantList.size()) {
 	    		assistantList.add(rowData);
 	    	} else {
 	    		assistantList.set(row, rowData);
 	    	}
-	    	//justifyRows(row, row+1);
 	    	fireTableRowsInserted(row, row);
-	    }
-	    
-	    protected static Vector<String> convertToVector(List<String> rowData){
-	    	if (rowData == null) return null;
-	    	Vector<String> v = new Vector<String>(rowData.size());
-	    	for (String s : rowData) {
-	    		v.addElement(s);
-	    	}
-	    	return v;
 	    }
 	 
 	}

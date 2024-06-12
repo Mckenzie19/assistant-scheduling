@@ -141,7 +141,6 @@ public class DataIO {
 	                    rowList.add(currentCell.getStringCellValue());
 	                }
 	            }
-	            LOGGER.info("Added new row: " + rowList.toString());
 	            fileData.add(rowList);
 	        }
 	        return fileData;
