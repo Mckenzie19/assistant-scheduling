@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -37,8 +36,6 @@ public class AssistantDataFormPanel extends FormPanel {
 	private static DataFileCreator dfc;
 	private static String[] columnNames = {"Name", "Unavailable Months", "Frequency", "Preferred Positions"};
 	private static List<List<String>> assistantData = new ArrayList<List<String>>();
-
-	// This setup allows for the parent frame to instruct the panel to either save or discard all data, depending on the button selected
 	
 	// Declare dialog components
 	private JLabel lblTitle;
@@ -63,9 +60,10 @@ public class AssistantDataFormPanel extends FormPanel {
 		AssistantDataFormPanel.dfc = dfc;
 		AssistantDataFormPanel.dataIO = dataIO;
 		dataSetters.add(new MethodRunner() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void run(Object arg) {
-				dfc.setAssistantDataFile((File) arg);
+				dfc.setAssistantData((List<List<String>>) arg);
 			}
 		});
 
@@ -132,8 +130,7 @@ public class AssistantDataFormPanel extends FormPanel {
 
 	@Override
 	public void checkData() throws Exception {
-		// TODO Auto-generated method stub
-		
+		data.add(assistantData);
 	}
 
 	@Override

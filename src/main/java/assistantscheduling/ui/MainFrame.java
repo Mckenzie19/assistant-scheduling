@@ -257,7 +257,9 @@ public class MainFrame extends JFrame {
 	 */
 	private void loadPreviousPage() {
 		FormPanel currPanel = (FormPanel) formPanel.getComponent(panelNum-1);
+		FormPanel prevPanel = (FormPanel) formPanel.getComponent(panelNum-2);
 		currPanel.discardData();
+		prevPanel.discardData();
 		formLayout.previous(formPanel);
 		panelNum--;
 		if(panelNum == 1) buttonLayout.previous(buttonPanel);

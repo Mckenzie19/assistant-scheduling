@@ -3,6 +3,7 @@ package assistantscheduling.dataio;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ public class DataFileCreator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataFileCreator.class);
 
-	private File assistantDataFile;
+	private List<List<String>> assistantData;
 	private LocalDate[] serviceRange;
 	private LocalDate[] additionalServices;
 	private LocalDate[] communionDates;
@@ -19,13 +20,13 @@ public class DataFileCreator {
 
 	public DataFileCreator() {}
 
-	public File getAssistantDataFile() {
-		return assistantDataFile;
+	public List<List<String>> getAssistantData() {
+		return assistantData;
 	}
 
-	public void setAssistantDataFile(File assistantDataFile) {
-		this.assistantDataFile = assistantDataFile;
-		LOGGER.info("Set assistant data import file: " + assistantDataFile.getName());
+	public void setAssistantData(List<List<String>> assistantData) {
+		this.assistantData = assistantData;
+		LOGGER.info("Set assistant data. Num Rows: " + assistantData.size());
 	}
 
 	public LocalDate[] getServiceRange() {
@@ -65,7 +66,7 @@ public class DataFileCreator {
 	}
 
 	public void discardAllData() {
-		assistantDataFile = null;
+		assistantData = null;
 		serviceRange = null;
 		additionalServices = null;
 		outputFile = null;

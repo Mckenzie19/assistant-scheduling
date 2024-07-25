@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -191,16 +192,20 @@ public class CommunionFormPanel extends FormPanel {
 		}
 		
 		// Makes sure each cell has the maximum space it can (assumes 4 columns)
-		int listWidth = lstServices.getBounds().width;
-		lstServices.setFixedCellWidth(listWidth/4);
+//		int listWidth = lstServices.getBounds().width;
+//		lstServices.setFixedCellWidth(listWidth/4);
 
 		// Dynamically decides how many columns can fix maximum -- Kept in case the hard coded 4 columns doesn't work out
 		// Fix the cell width to better fill the space
-//		int listWidth = lstServices.getVisibleRect().width;
-//		int currCellWidth = lstServices.getCellBounds(0, 0).width;
-//		int numCols = listWidth / currCellWidth;
-//		int padding = (listWidth % currCellWidth) / numCols; // How much "padding" to add to the width of each cell to evenly distribute the white space
-//		lstServices.setFixedCellWidth(currCellWidth+padding);
+		//int listWidth = lstServices.getVisibleRect().width;
+		int paneWidth = scrollPane.getVisibleRect().width;
+		int scrollBarSize = ((Integer)UIManager.get("ScrollBar.width")).intValue() + 4;
+		int currCellWidth = lstServices.getCellBounds(0, 0).width;
+		int numCols = (paneWidth - scrollBarSize) / currCellWidth;
+		LOGGER.info("Calculated number of columns: " + numCols);
+		int padding = ((paneWidth - scrollBarSize) % currCellWidth) / numCols; // How much "padding" to add to the width of each cell to evenly distribute the white space
+		LOGGER.info("Width of Viewing Pane + Scroll Bar: " + (paneWidth - scrollBarSize) + " Current Cell Width: " + currCellWidth + " Padding Needed: " + padding);
+		lstServices.setFixedCellWidth(currCellWidth + padding);
 	}
 
 }
