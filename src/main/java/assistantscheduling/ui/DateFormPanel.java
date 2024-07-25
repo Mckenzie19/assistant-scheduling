@@ -19,7 +19,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ListSelectionEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,23 +242,15 @@ public class DateFormPanel extends FormPanel {
 			LocalDate endDate = LocalDate.parse((String)comboEndMonth.getSelectedItem()+"."
 					+((Integer)comboEndDay.getSelectedItem()).toString()+"."+((Integer)comboEndYear.getSelectedItem()).toString(), dtFormatter);
 			// Checks of the main date range makes logical sense (is not in the past and start comes before end)
-			LOGGER.info("Start Date: " + startDate + " End Date: " + endDate);
 			if (dateRangeLogical(startDate, endDate)) {
 				LOGGER.info("Dates confirmed logical.");
 				lblIllogicalDates.setVisible(false);
 				serviceDateRange = new LocalDate[2];
 				serviceDateRange[0] = startDate;
 				serviceDateRange[1] = endDate;
-				LOGGER.info("Service Date Range: " + Arrays.toString(serviceDateRange));
 				// Add dates to FormPanel data list to be saved by parent frame
-				//data.clear();
-				LOGGER.info("Adding information to data variable with Hashcode: " + System.identityHashCode(data));		
 				data.add(serviceDateRange);
 				data.add(additionalServices);
-				LOGGER.info("Data Object Contents: ");
-				for (int i = 0; i < data.size(); i++) {
-					if (data.get(i) != null) LOGGER.info(Arrays.toString((LocalDate[]) data.get(i)));
-				}
 			} else {
 				lblIllogicalDates.setVisible(true);
 				throw new Exception("Date range illogical.");

@@ -197,14 +197,11 @@ public class CommunionFormPanel extends FormPanel {
 
 		// Dynamically decides how many columns can fix maximum -- Kept in case the hard coded 4 columns doesn't work out
 		// Fix the cell width to better fill the space
-		//int listWidth = lstServices.getVisibleRect().width;
 		int paneWidth = scrollPane.getVisibleRect().width;
-		int scrollBarSize = ((Integer)UIManager.get("ScrollBar.width")).intValue() + 4;
+		int scrollBarSize = ((Integer)UIManager.get("ScrollBar.width")).intValue() + 3;
 		int currCellWidth = lstServices.getCellBounds(0, 0).width;
 		int numCols = (paneWidth - scrollBarSize) / currCellWidth;
-		LOGGER.info("Calculated number of columns: " + numCols);
 		int padding = ((paneWidth - scrollBarSize) % currCellWidth) / numCols; // How much "padding" to add to the width of each cell to evenly distribute the white space
-		LOGGER.info("Width of Viewing Pane + Scroll Bar: " + (paneWidth - scrollBarSize) + " Current Cell Width: " + currCellWidth + " Padding Needed: " + padding);
 		lstServices.setFixedCellWidth(currCellWidth + padding);
 	}
 
